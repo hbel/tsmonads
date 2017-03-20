@@ -1,0 +1,29 @@
+{
+  "name": "tsmonads",
+  "version": "0.0.1",
+  "description": "Monads in TypeScript",
+  "main": "app.js",
+  "scripts": {
+    "build": "./node_modules/.bin/webpack",
+    "start": "./node_modules/.bin/webpack"
+  },
+  "author": "Hendrik Belitz",
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/hbel/tsmonads"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "glob": "^7.1.1"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^2.5.46",
+    "@types/node": "^7.0.8",
+    "jasmine": "^2.5.3",
+    "nodemon": "^1.11.0",
+    "ts-loader": "^2.0.2",
+    "webpack": "^2.2.1",
+    "webpack-merge": "^2.6.1",
+    "webpack-shell-plugin": "^0.5.0"
+  }
+}
