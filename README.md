@@ -1,0 +1,2 @@
+# tsmonads
+Monads in TypeScript
