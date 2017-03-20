@@ -1,5 +1,3 @@
-export namespace Monads {
-
 // Factory function for maybes. Depending on the argument will return a Just<T> or Nothing
 export function maybe<T>(val: T): Maybe<T> {
     if ( !val )
@@ -77,7 +75,46 @@ class Nothing implements Maybe<any> {
         throw new Error("Nothing contains no value");
     }
 
-    nothing(): boolean { return true; };
+    nothing(): boolean { return true; }
 }
 
+export function foo(): void {}
+
+export function call<T>( f: () => T ): Try<T> {
+    try{
+        const res = f();
+        return new Success(res);
+    }
+    catch (ex)
+    {
+        return new Failure(ex);
+    }
+}
+
+export interface Try<T> {
+    onSuccess( f: (x: T) => void ): Try<T>;
+    onFailure( f: (error: Error) => void ): Try<T>;
+    succeeded(): boolean;
+    result(): T;
+    error(): Error;
+}
+
+class Success<T> implements Try<T> {
+    _value: T;
+    constructor(val: T) { this._value = val; }
+    onSuccess( f: (x: T) => void ): Try<T> { f(this._value); return this; }
+    onFailure( f: (error: Error) => void ): Try<T> { return this; }
+    succeeded(): boolean { return true; }
+    result(): T { return this._value; }
+    error(): Error { throw new Error("No error occured"); }
+}
+
+class Failure implements Try<any> {
+    _error: Error;
+    constructor(err: Error) { this._error = err; }
+    onSuccess( f: (x: any) => void ): Try<any> { return this; }
+    onFailure( f: (error: Error) => void ): Try<any> { f(this._error); return this; }
+    succeeded(): boolean { return false; }
+    result(): any { throw new Error("Try resulted in an error!"); }
+    error(): Error { return this._error; }
 }
