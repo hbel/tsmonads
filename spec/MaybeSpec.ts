@@ -1,4 +1,4 @@
-import {maybe} from "./../monads";
+import {maybe} from "./../src/monads";
 
 const jasmine = require("jasmine");
 

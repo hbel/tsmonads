@@ -1,4 +1,4 @@
-import {left, right} from "./../monads";
+import {left, right} from "./../src/monads";
 
 const jasmine = require("jasmine");
 

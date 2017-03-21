@@ -1,4 +1,4 @@
-import {call} from "./../monads";
+import {call} from "./../src/monads";
 
 const jasmine = require("jasmine");
 

@@ -20,11 +20,11 @@ const target = process.env.npm_lifecycle_event === 'build' ? 'production' : 'dev
 
 commonConfig = {
   // make sure that all test specs are included in bundle.js
-  entry: { app : path.resolve(__dirname,'monads.ts') },
+  entry: { monads : path.resolve(__dirname,'src/monads.ts') },
   target: 'node',
   
   output: {
-    path: path.join(__dirname,'dist'),
+    path: path.join(__dirname,''),
     filename: '[name].js'
   },
   resolve: {
@@ -39,13 +39,14 @@ commonConfig = {
           "preserveConstEnums": true,
           "outDir": "./build",
           "sourceMap": true,
-          "target": "es2015"
+          "target": "es2015",
+          "declaration": true
         }} }
     ]
   },
   externals : nodeModules,
   plugins : [new WebpackShellPlugin({
-            onBuildEnd:['node ./dist/app.js']
+            onBuildEnd:['jasmine']
         })]
 }
 
@@ -53,7 +54,7 @@ if ( target === 'development' ) {
     module.exports = merge( commonConfig, {
         entry: { 
             spec : glob.sync("./spec/**/*.ts"), 
-            app : path.resolve(__dirname,'monads.ts')
+            monads : path.resolve(__dirname,'src/monads.ts')
         },
         plugins : [new WebpackShellPlugin({
             onBuildEnd:['jasmine']

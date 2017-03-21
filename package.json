@@ -14,12 +14,8 @@
     "url": "https://github.com/hbel/tsmonads"
   },
   "files": [
-    "src",
-    "spec",
-    "tsconfig.json",
-    "tslint.json",
-    "webpack.config.js",
-    "monads.ts"
+    "monads.js",
+    "build/src"
   ],
   "license": "ISC",
   "devDependencies": {
