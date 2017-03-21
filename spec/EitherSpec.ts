@@ -1,4 +1,4 @@
-import {left,right} from "./../src/monads";
+import {left, right} from "./../monads";
 
 const jasmine = require("jasmine");
 
@@ -9,11 +9,11 @@ describe ("A left value", () => {
         expect(m.isRight()).toBe(false);
         expect(m.left()).toBe(5);
         expect(m.right).toThrow(new Error("No right value"));
-    });    
+    });
     it("should be mappable using map and flatmap", () => {
-        const m = left<number,number>(5);
-        expect(m.map(x=>x+2).left()).toBe(5);
-        expect(m.map(x=>x>2).left()).toBe(5);
+        const m = left<number, number>(5);
+        expect(m.map(x => x + 2).left()).toBe(5);
+        expect(m.map(x => x > 2).left()).toBe(5);
     });
 });
 
@@ -24,10 +24,10 @@ describe ("A right value", () => {
         expect(m.isLeft()).toBe(false);
         expect(m.right()).toBe(5);
         expect(m.left).toThrow(new Error("No left value"));
-    });    
+    });
     it("should be mappable using map and flatmap", () => {
         const m = right(5);
-        expect(m.map(x=>x+2).right()).toBe(7);
-        expect(m.map(x=>x>2).right()).toBe(true);
+        expect(m.map(x => x + 2).right()).toBe(7);
+        expect(m.map(x => x > 2).right()).toBe(true);
     });
 });

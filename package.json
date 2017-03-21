@@ -2,7 +2,7 @@
   "name": "tsmonads",
   "version": "0.0.1",
   "description": "Monads in TypeScript",
-  "main": "app.js",
+  "main": "src/monads.ts",
   "scripts": {
     "build": "./node_modules/.bin/webpack",
     "start": "./node_modules/.bin/webpack"
@@ -12,11 +12,12 @@
     "type": "github",
     "url": "https://github.com/hbel/tsmonads"
   },
+  "files": [
+    "src", "spec", "tsconfig.json", "tslint.json", "webpack.config.js", "monads.ts"
+  ],
   "license": "ISC",
-  "dependencies": {
-    "glob": "^7.1.1"
-  },
   "devDependencies": {
+    "glob": "^7.1.1",
     "@types/jasmine": "^2.5.46",
     "@types/node": "^7.0.8",
     "jasmine": "^2.5.3",

@@ -20,7 +20,7 @@ const target = process.env.npm_lifecycle_event === 'build' ? 'production' : 'dev
 
 commonConfig = {
   // make sure that all test specs are included in bundle.js
-  entry: { app : path.resolve(__dirname,'src/monads.ts') },
+  entry: { app : path.resolve(__dirname,'monads.ts') },
   target: 'node',
   
   output: {
@@ -53,7 +53,7 @@ if ( target === 'development' ) {
     module.exports = merge( commonConfig, {
         entry: { 
             spec : glob.sync("./spec/**/*.ts"), 
-            app : path.resolve(__dirname,'src/monads.ts')
+            app : path.resolve(__dirname,'monads.ts')
         },
         plugins : [new WebpackShellPlugin({
             onBuildEnd:['jasmine']
