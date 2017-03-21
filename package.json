@@ -2,7 +2,8 @@
   "name": "tsmonads",
   "version": "0.0.2",
   "description": "Monads in TypeScript",
-  "main": "src/monads.ts",
+  "main": "monads.ts",
+  "typings": "monads",
   "scripts": {
     "build": "./node_modules/.bin/webpack",
     "start": "./node_modules/.bin/webpack"
