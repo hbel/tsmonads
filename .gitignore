@@ -3,3 +3,5 @@ node_modules/
 # webpack dist
 dist/
 yarn.lock
+lib/
+build/
