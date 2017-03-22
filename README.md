@@ -1,5 +1,7 @@
 # tsmonads
 
+[![Build Status](https://travis-ci.org/hbel/tsmonads.svg?branch=master)](https://travis-ci.org/hbel/tsmonads)
+
 ### Monads in TypeScript
 
 _tsmonads_ provides some basic monadic data types for use with TypeScript, namely MayBe, Try and Either monads.
