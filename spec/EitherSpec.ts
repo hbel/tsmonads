@@ -1,4 +1,4 @@
-import {left, right} from "./../src/monads";
+import {left, right, flatten} from "./../src/monads";
 
 const jasmine = require("jasmine");
 
@@ -29,5 +29,20 @@ describe ("A right value", () => {
         const m = right(5);
         expect(m.map(x => x + 2).right()).toBe(7);
         expect(m.map(x => x > 2).right()).toBe(true);
+    });
+});
+
+describe ("Flattening an array of Eithers", () => {
+    it("should give you an Either array", () => {
+        const eithers = [right(5), right(4), right(3)];
+        const flattened = flatten(eithers);
+        console.log(flattened);
+        expect(flattened.isRight()).toBe(true);
+    });
+    it("should be a left if any either is a left", () => {
+        const eithers = [right(5), left(4), right(3)];
+        const flattened = flatten(eithers);
+        console.log(flattened);
+        expect(flattened.isLeft()).toBe(true);
     });
 });

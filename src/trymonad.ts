@@ -1,3 +1,5 @@
+import {Monad} from "./helpers";
+
 // Tries to call the given function. Returns a Success if
 // no exception occured, otherwise returns a Failure containing the error
 export function call<T>( f: () => T ): Try<T> {
@@ -12,7 +14,7 @@ export function call<T>( f: () => T ): Try<T> {
 }
 
 // Try monad
-export interface Try<T> {
+export interface Try<T> extends Monad<T> {
     // Function that should be called if this is a Success
     onSuccess( f: (x: T) => void ): Try<T>;
 
@@ -31,10 +33,10 @@ export interface Try<T> {
     error(): Error;
 
     // Map the result using another function
-    map<U>( f: (x:T) => U ) : Try<U>;
-    
+    map<U>( f: (x: T) => U ): Try<U>;
+
     // Flat map the result
-    flatMap<U>( f: (x:T) => Try<U> ) : Try<U>;
+    flatMap<U>( f: (x: T) => Try<U> ): Try<U>;
 }
 
 class Success<T> implements Try<T> {
@@ -45,11 +47,14 @@ class Success<T> implements Try<T> {
     succeeded(): boolean { return true; }
     result(): T { return this._value; }
     error(): Error { throw new Error("No error occured"); }
-    map<U>( f: (x:T) => U ) : Try<U> {
-        return call<U>( () => { return f(this._value); } )
+    map<U>( f: (x: T) => U ): Try<U> {
+        return call<U>( () => { return f(this._value); } );
     }
-    flatMap<U>( f: (x:T) => Try<U> ) : Try<U> {
+    flatMap<U>( f: (x: T) => Try<U> ): Try<U> {
         return f(this._value);
+    }
+    unit<V>(x: V): Try<V> {
+        return call( () => { return x; } );
     }
 }
 
@@ -61,10 +66,13 @@ class Failure implements Try<any> {
     succeeded(): boolean { return false; }
     result(): any { throw new Error("Try resulted in an error!"); }
     error(): Error { return this._error; }
-    map<T,U>( f: (x:T) => U ) : Try<U> {
+    map<T, U>( f: (x: T) => U ): Try<U> {
         return this;
     }
-    flatMap<T,U>( f: (x:T) => Try<U> ) : Try<U> {
-        return this; 
+    flatMap<T, U>( f: (x: T) => Try<U> ): Try<U> {
+        return this;
+    }
+    unit<V>(x: V): Try<V> {
+        return call( () => { return x; } );
     }
 }

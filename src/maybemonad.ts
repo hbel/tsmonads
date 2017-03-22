@@ -1,3 +1,5 @@
+import {Monad} from "./helpers";
+
 // Factory function for maybes. Depending on the argument will return a Just<T> or Nothing
 export function maybe<T>(val: T): Maybe<T> {
     if ( !val )
@@ -7,7 +9,7 @@ export function maybe<T>(val: T): Maybe<T> {
 }
 
 // Maybe monad.
-export interface Maybe<T> {
+export interface Maybe<T> extends Monad<T> {
     // Map the contained value with the given function
     map<U>(f: (x: T) => U): Maybe<U>;
 
@@ -54,6 +56,8 @@ class Just<T> implements Maybe<T> {
     }
 
     nothing(): boolean { return false; };
+
+    unit = maybe;
 }
 
 // Nothing class. If a maybe monad contains no value, it will be of this type.
@@ -76,4 +80,6 @@ class Nothing implements Maybe<any> {
     }
 
     nothing(): boolean { return true; }
+
+    unit = maybe;
 }
