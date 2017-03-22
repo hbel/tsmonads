@@ -36,13 +36,11 @@ describe ("Flattening an array of Eithers", () => {
     it("should give you an Either array", () => {
         const eithers = [right(5), right(4), right(3)];
         const flattened = flatten(eithers);
-        console.log(flattened);
         expect(flattened.isRight()).toBe(true);
     });
     it("should be a left if any either is a left", () => {
         const eithers = [right(5), left(4), right(3)];
         const flattened = flatten(eithers);
-        console.log(flattened);
         expect(flattened.isLeft()).toBe(true);
     });
 });
