@@ -5,8 +5,9 @@
   "main": "lib/src/monads.js",
   "typings": "lib/src/monads",
   "scripts": {
-    "build": "./node_modules/.bin/webpack",
-    "start": "./node_modules/.bin/webpack"
+    "build": "tsc",
+    "start": "tsc",
+    "test" : "jasmine"
   },
   "author": "Hendrik Belitz",
   "repository": {
