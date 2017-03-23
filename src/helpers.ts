@@ -7,7 +7,7 @@ export interface Monad<T> {
 
 export interface IArrayBase<T>{
     [index: number]: T;
-    length : number;
+    length: number;
     slice(start: number, end?: number): IArrayBase<T>;
     concat(that: IArrayBase<T>): IArrayBase<T>;
 }

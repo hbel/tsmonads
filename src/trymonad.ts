@@ -3,12 +3,11 @@ import {Monad} from "./helpers";
 // Tries to call the given function. Returns a Success if
 // no exception occured, otherwise returns a Failure containing the error
 export function call<T>( f: () => T ): Try<T> {
-    try{
-        const res = f();
-        return new Success(res);
+    try {
+        const result = f();
+        return new Success(result);
     }
-    catch (ex)
-    {
+    catch (ex) {
         return new Failure(ex);
     }
 }
@@ -40,8 +39,7 @@ export interface Try<T> extends Monad<T> {
 }
 
 class Success<T> implements Try<T> {
-    private readonly _value: T;
-    constructor(val: T) { this._value = val; }
+    constructor(private readonly _value: T) {}
     onSuccess( f: (x: T) => void ): Try<T> { f(this._value); return this; }
     onFailure( f: (error: Error) => void ): Try<T> { return this; }
     succeeded(): boolean { return true; }
@@ -59,8 +57,7 @@ class Success<T> implements Try<T> {
 }
 
 class Failure implements Try<any> {
-    private readonly _error: Error;
-    constructor(err: Error) { this._error = err; }
+    constructor(private readonly _error: Error) {}
     onSuccess( f: (x: any) => void ): Try<any> { return this; }
     onFailure( f: (error: Error) => void ): Try<any> { f(this._error); return this; }
     succeeded(): boolean { return false; }
