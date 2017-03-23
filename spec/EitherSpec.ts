@@ -42,5 +42,7 @@ describe ("Flattening an array of Eithers", () => {
         const eithers = [right(5), left(4), right(3)];
         const flattened = flatten(eithers);
         expect(flattened.isLeft()).toBe(true);
+        expect(flatten([left(5), right(4), right(3)]).isLeft()).toBe(true);
+        expect(flatten([right(5), right(4), left(3)]).isLeft()).toBe(true);
     });
 });
