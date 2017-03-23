@@ -25,7 +25,7 @@ export interface Maybe<T> extends Monad<T> {
     unsafeLift(): T;
 
     // Is this monad "nothing"?
-    nothing(): boolean;
+    nothing: boolean;
 }
 
 // Just class. If a maybe monad contains a value, it will be hold here.
@@ -51,7 +51,7 @@ export class Just<T> implements Maybe<T> {
         return this._value;
     }
 
-    nothing(): boolean { return false; };
+    get nothing(): boolean { return false; };
 
     unit = maybe;
 }
@@ -75,7 +75,7 @@ class Nothing implements Maybe<any> {
         throw new Error("Nothing contains no value");
     }
 
-    nothing(): boolean { return true; }
+    get nothing(): boolean { return true; }
 
     unit = maybe;
 }
