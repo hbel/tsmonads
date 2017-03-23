@@ -40,7 +40,7 @@ export interface Try<T> extends Monad<T> {
 }
 
 class Success<T> implements Try<T> {
-    _value: T;
+    private readonly _value: T;
     constructor(val: T) { this._value = val; }
     onSuccess( f: (x: T) => void ): Try<T> { f(this._value); return this; }
     onFailure( f: (error: Error) => void ): Try<T> { return this; }
@@ -59,7 +59,7 @@ class Success<T> implements Try<T> {
 }
 
 class Failure implements Try<any> {
-    _error: Error;
+    private readonly _error: Error;
     constructor(err: Error) { this._error = err; }
     onSuccess( f: (x: any) => void ): Try<any> { return this; }
     onFailure( f: (error: Error) => void ): Try<any> { f(this._error); return this; }

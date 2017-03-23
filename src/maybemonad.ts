@@ -31,28 +31,28 @@ export interface Maybe<T> extends Monad<T> {
 // Just class. If a maybe monad contains a value, it will be hold here.
 class Just<T> implements Maybe<T> {
 
-    private value: T;
+    private readonly _value: T;
 
     constructor(val: T) {
         if (!val)
             throw new Error("Value must be not null and not undefined");
-        this.value = val;
+        this._value = val;
     }
 
     map<U>(f: (x: T) => U): Maybe<U> {
-        return new Just<U>(f(this.value));
+        return new Just<U>(f(this._value));
     }
 
     flatMap<U>(f: (x: T) => Maybe<U>): Maybe<U> {
-        return f(this.value);
+        return f(this._value);
     }
 
     orElse(def: T): T {
-        return this.value;
+        return this._value;
     }
 
     unsafeLift(): T {
-        return this.value;
+        return this._value;
     }
 
     nothing(): boolean { return false; };

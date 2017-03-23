@@ -14,12 +14,14 @@ export function right<L, R>(value: R) {
 
 // Either monad
 export class Either<L, R> implements Monad<R>{
-    _left: L;
-    _right: R;
+    private readonly _left: L;
+    private readonly _right: R;
 
     constructor(left: L, right: R) {
+        if ( left !== undefined && right !== undefined )
+            throw new Error("Can only set left or right to a defined value!");
         this._left = left;
-        this._right = right;
+        this._right = right;        
     }
 
     // Map the contained value with the given function. Note that the type of the left value does not change!
