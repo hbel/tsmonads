@@ -1,7 +1,9 @@
 import {Monad} from "./helpers";
 
-// Tries to call the given function. Returns a Success if
-// no exception occured, otherwise returns a Failure containing the error
+/**
+ * Tries to call the given function. Returns a Success if
+ * no exception occured, otherwise returns a Failure containing the error
+ */
 export function call<T>( f: () => T ): Try<T> {
     try {
         const result = f();
@@ -12,30 +14,61 @@ export function call<T>( f: () => T ): Try<T> {
     }
 }
 
-// Try monad
+/**
+ *  Try monad
+ */
 export interface Try<T> extends Monad<T> {
-    // Function that should be called if this is a Success
+    /**
+     * Function that should be called if this is a Success
+     */
     onSuccess( f: (x: T) => void ): Try<T>;
 
-    // Function to be called if this is a Failure
+    /**
+     * Function to be called if this is a Failure
+     */
     onFailure( f: (error: Error) => void ): Try<T>;
 
     // Whether the call has succceeded without an exception
     succeeded: boolean;
 
-    // The calls result (if no exception occured). Calling this
-    // will throw a runtime error if an exception occured.
+    /**
+     * The calls result (if no exception occured). Calling this
+     * will throw a runtime error if an exception occured.
+     */
     result: T;
 
-    // The error (if an exception occured). Calling this
-    // will throw a runtime error if no exception occured.
+    /**
+     * The error (if an exception occured). Calling this
+     * will throw a runtime error if no exception occured.
+     */
     error: Error;
 
-    // Map the result using another function
+    /**
+     * Map the result using another function
+     */
     map<U>( f: (x: T) => U ): Try<U>;
 
-    // Flat map the result
+    /**
+     * Flat map the result
+     */
     flatMap<U>( f: (x: T) => Try<U> ): Try<U>;
+
+    /**
+     * Run forEach on the monad. Will be executed only if the monad 
+     * contains a value.
+     */
+    forEach(f: (x: T) => void ): void;
+
+    /**
+     *  Lift the monad to get its value. Note that this will cause
+     *  a runtime error if the monad is Nothing!
+     * */
+    unsafeLift(): T;
+
+    /**
+     *  Is this monad not "nothing"?
+     */
+    hasValue(): boolean;
 }
 
 class Success<T> implements Try<T> {
@@ -54,6 +87,9 @@ class Success<T> implements Try<T> {
     unit<V>(x: V): Try<V> {
         return call( () => { return x; } );
     }
+    forEach = (f: (x: T) => void ): void => f(this._value);
+    unsafeLift = (): T =>  this._value;
+    hasValue = () => true;
 }
 
 class Failure implements Try<any> {
@@ -72,4 +108,9 @@ class Failure implements Try<any> {
     unit<V>(x: V): Try<V> {
         return call( () => { return x; } );
     }
+    forEach(f: (x: any) => void ): void {}
+    unsafeLift<T>(): T {
+        throw new Error("Is a failure");
+    }
+    hasValue = () => false;
 }

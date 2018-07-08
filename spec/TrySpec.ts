@@ -1,4 +1,4 @@
-import {call, flatten} from "./../src/monads";
+import {call, flatten, Try} from "./../src/monads";
 
 const jasmine = require("jasmine");
 
@@ -69,7 +69,7 @@ describe ("Flatten on an array of try monads", () => {
         const t3 = call( () => 7 + 1 );
         expect(t3.succeeded).toBe(true);
         const tryList = [t1, t2, t3];
-        const tryArray = flatten(tryList);
+        const tryArray = flatten<number, Try<number>>(tryList);
         expect(tryArray.succeeded).toBe(true);
     });
     it("will set a flattened try array to failure if a single function call failed", () => {
@@ -77,7 +77,7 @@ describe ("Flatten on an array of try monads", () => {
         const t2 = call( () => { throw new Error(); } );
         const t3 = call( () => 7 + 1 );
         const tryList = [t1, t2, t3];
-        const tryArray = flatten(tryList);
+        const tryArray = flatten<number, Try<number>>(tryList);
         expect(tryArray.succeeded).toBe(false);
     });
 });

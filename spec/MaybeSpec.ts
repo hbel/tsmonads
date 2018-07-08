@@ -1,4 +1,4 @@
-import {flatten, maybe} from "./../src/monads";
+import {flatten, maybe, forEach, map, Maybe} from "./../src/monads";
 
 const jasmine = require("jasmine");
 
@@ -13,6 +13,38 @@ describe ("A maybe factory", () => {
         const m = maybe(null);
         expect(m.nothing).toBe(true);
         expect(m.orElse(0)).toBe(0);
+    });
+});
+
+describe ("Maybe.match", () => {
+    it("should run a matcher function depending on it's contents", () => {
+        const u = maybe(5).match( (x) => x + 1, () => 0);
+        expect(u).toBe(6);
+        const v = maybe(null).match( (x) => x + 1, () => 0);
+        expect(v).toBe(0);
+    });
+});
+
+describe ("Maybe.foreach", () => {
+    it("will run a function only if the monad holds a value", () => {
+        let x = 1;
+        maybe(5).forEach( (y) => x = x + y);
+        expect(x).toBe(6);
+        maybe(null).forEach( (y) => x = x + y);
+        expect(x).toBe(6);
+    });
+});
+
+describe("On a collection of Maybes", () => {
+    it("foreach's parameter should be executed on each element that holds a value", () => {
+        let mbList: Array<Maybe<number>> = [1, 2, 3, 4].map(x => maybe(x)); // Array of Maybe<number>
+        let x = 0;
+        forEach(mbList, (y: number) => x = x + y);
+        expect(x).toBe(10);
+        mbList = [null, 2, null, 4].map(x => maybe(x)); // Array of Maybe<number>
+        x = 0;
+        forEach<number, Maybe<number>>(mbList, (y) => x = x + y);
+        expect(x).toBe(6);
     });
 });
 
@@ -48,8 +80,7 @@ describe ("A Maybe", () => {
 
         let mbList = [1, 2, 3, 4].map(x => maybe(x)); // Array of Maybe<number>
         // Turn this into a Maybe[Array<number>]
-
-        let mbArray = flatten(mbList);
+        let mbArray = flatten<number, Maybe<number>>(mbList);
         expect(mbArray.nothing).toBe(false);
         let normalArray = mbArray.orElse([]);
         expect(normalArray.length).toBe(4);
