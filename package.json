@@ -1,6 +1,6 @@
 {
   "name": "tsmonads",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Monads in TypeScript",
   "main": "index.js",
   "typings": "lib/src/monads",
