@@ -1,10 +1,11 @@
 import {Monad} from "./helpers";
+import {Just, Nothing, Maybe} from "./maybemonad";
 
 /**
  * Create an Either with a left (errornous) value
  */
 export function left<L, R>(value: L) {
-    if (!value) throw Error("Value must not be undefined or null!");
+    if (value ===  null || value === undefined) throw Error("Value must not be undefined or null!");
     return  new Either<L, R>(value, undefined);
 }
 
@@ -12,7 +13,7 @@ export function left<L, R>(value: L) {
  * Create an Either with a right (correct) value
  */
 export function right<L, R>(value: R) {
-    if (!value) throw Error("Value must not be undefined or null!");
+    if (value ===  null || value === undefined) throw Error("Value must not be undefined or null!");
     return  new Either<L, R>(undefined, value);
 }
 
@@ -49,12 +50,12 @@ export class Either<L, R> implements Monad<R> {
     /**
      * Whether the left holds a value
      */
-    isLeft = () => !this._right;
+    isLeft = () => (this._right === null || this._right === undefined);
 
     /**
      * Whether the right holds a value
      */
-    isRight = () => !this._left;
+    isRight = () => (this._left === null || this._left === undefined);
 
     /**
      * Return the left value. Will throw a runtime error if there is no left value
@@ -92,4 +93,9 @@ export class Either<L, R> implements Monad<R> {
     }
 
     hasValue = () => this.isRight();
+
+    /**
+     * Convert to maybe
+     */
+    toMaybe = (): Maybe<R> => this.isRight() ? new Just(this._right) : new Nothing();
 }

@@ -1,4 +1,5 @@
 import {Monad} from "./helpers";
+import {Maybe, maybe, Nothing} from "./maybemonad";
 
 /**
  * Tries to call the given function. Returns a Success if
@@ -69,9 +70,14 @@ export interface Try<T> extends Monad<T> {
      *  Is this monad not "nothing"?
      */
     hasValue(): boolean;
+
+    /**
+     * Convert try into a maybe
+     */
+    toMaybe(): Maybe<T>
 }
 
-class Success<T> implements Try<T> {
+export class Success<T> implements Try<T> {
     constructor(private readonly _value: T) {}
     onSuccess( f: (x: T) => void ): Try<T> { f(this._value); return this; }
     onFailure( f: (error: Error) => void ): Try<T> { return this; }
@@ -90,9 +96,10 @@ class Success<T> implements Try<T> {
     forEach = (f: (x: T) => void ): void => f(this._value);
     unsafeLift = (): T =>  this._value;
     hasValue = () => true;
+    toMaybe = () => maybe(this._value);
 }
 
-class Failure implements Try<any> {
+export class Failure implements Try<any> {
     constructor(private readonly _error: Error) {}
     onSuccess( f: (x: any) => void ): Try<any> { return this; }
     onFailure( f: (error: Error) => void ): Try<any> { f(this._error); return this; }
@@ -113,4 +120,5 @@ class Failure implements Try<any> {
         throw new Error("Is a failure");
     }
     hasValue = () => false;
+    toMaybe = () => new Nothing();
 }

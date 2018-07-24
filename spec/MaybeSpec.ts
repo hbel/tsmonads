@@ -1,4 +1,4 @@
-import {flatten, maybe, forEach, map, Maybe} from "./../src/monads";
+import {flatten, maybe, forEach, map, Maybe} from "./../monads";
 
 const jasmine = require("jasmine");
 
@@ -52,6 +52,13 @@ describe ("A Maybe", () => {
     it("should throw an exception on lifting a nothing", () => {
         const m = maybe(null);
         expect(m.unsafeLift).toThrow(new Error("Nothing contains no value"));
+    });
+    it("should also work when encapsulating a boolean", () => {
+        const m = maybe(true);        
+        expect(m.hasValue()).toBe(true);
+        const n = maybe(false);
+        expect(m.hasValue()).toBe(true);
+        expect(m.nothing).toBe(false);
     });
     it("should map to new monads correctly for correct result", () => {
         const m = maybe(5).map( x => 2 * x).flatMap( y => maybe(y / 2));
