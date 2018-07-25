@@ -1,4 +1,4 @@
-import {clean, maybe, Maybe} from "./../src/monads";
+import {clean, maybe, Maybe} from "./../monads";
 
 const jasmine = require("jasmine");
 

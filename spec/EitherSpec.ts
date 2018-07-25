@@ -1,4 +1,4 @@
-import {left, right, flatten, Either} from "./../src/monads";
+import {left, right, flatten, Either} from "./../monads";
 
 const jasmine = require("jasmine");
 
@@ -30,6 +30,19 @@ describe ("A right value", () => {
         expect(m.map(x => x + 2).right).toBe(7);
         expect(m.map(x => x > 2).right).toBe(true);
     });
+});
+
+describe ("Converting either monad to maybe monad", () => {
+    it("should convert a Right into a Just", () => {
+        const t = right(5);
+        expect(t.toMaybe().hasValue()).toBe(true);
+        expect(t.toMaybe().orElse(0)).toBe(5);
+    })
+    it("should convert a Left into a Nothing", () => {
+        const t = left(0);
+        expect(t.toMaybe().hasValue()).toBe(false);
+        expect(t.toMaybe().orElse(0)).toBe(0);
+    })
 });
 
 describe ("Flattening an array of Eithers", () => {

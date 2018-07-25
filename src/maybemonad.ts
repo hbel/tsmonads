@@ -1,8 +1,8 @@
 import {Monad} from "./helpers";
 
 // Factory function for maybes. Depending on the argument will return a Just<T> or Nothing
-export function maybe<T>(val: T | null | undefined = null): Maybe<T> {
-    if ( !val )
+export function maybe<T>(val: T): Maybe<T> {
+    if (val === null || val === undefined)
         return new Nothing();
     else
         return new Just<T>(val);
@@ -62,7 +62,7 @@ export interface Maybe<T> extends Monad<T> {
  */
 export class Just<T> implements Maybe<T> {
     constructor(private readonly _value: T) {
-        if (!this._value)
+        if (this._value === undefined || this._value === null)
             throw new Error("Value must be not null and not undefined");
     }
 
@@ -95,7 +95,7 @@ export class Just<T> implements Maybe<T> {
 /** 
  * Nothing class. If a maybe monad contains no value, it will be of this type.
  */
-class Nothing implements Maybe<any> {
+export class Nothing implements Maybe<any> {
 
     map<T, U>(f: (x: T) => U): Maybe<U> {
         return new Nothing();

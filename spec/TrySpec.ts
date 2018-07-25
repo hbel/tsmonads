@@ -1,4 +1,4 @@
-import {call, flatten, Try} from "./../src/monads";
+import {call, flatten, Try} from "./../monads";
 
 const jasmine = require("jasmine");
 
@@ -42,6 +42,19 @@ describe ("Mapping Try monads", () => {
         expect(t2.error.message).toBe("Bar");
         expect(t2.error.name).toBe("TypeError");
     });
+});
+
+describe ("Converting try monad to maybe monad", () => {
+    it("Should convert a Success into a Just", () => {
+        const t = call( () => 2 + 3 );
+        expect(t.toMaybe().hasValue()).toBe(true);
+        expect(t.toMaybe().orElse(0)).toBe(5);
+    })
+    it("Should convert a Failure into a Nothing", () => {
+        const t = call<number>( () => { throw "Error"; } );
+        expect(t.toMaybe().hasValue()).toBe(false);
+        expect(t.toMaybe().orElse(0)).toBe(0);
+    })
 });
 
 describe ("Flatmap of Try monads", () => {
