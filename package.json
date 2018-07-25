@@ -1,9 +1,9 @@
 {
   "name": "tsmonads",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Monads in TypeScript",
   "main": "lib/monads.js",
-  "types": "lib/monads.t.ds",
+  "types": "lib/monads.d.ts",
   "scripts": {
     "build": "tsc",
     "start": "tsc; jasmine",
