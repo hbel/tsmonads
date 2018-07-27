@@ -10,7 +10,7 @@ describe ("A maybe factory", () => {
         expect(m.unsafeLift()).toBe(5);
     });
     it("should return Nothing for a value of null", () => {
-        const m = maybe(null);
+        const m = maybe<number>(null);
         expect(m.nothing).toBe(true);
         expect(m.orElse(0)).toBe(0);
     });
@@ -20,7 +20,7 @@ describe ("Maybe.match", () => {
     it("should run a matcher function depending on it's contents", () => {
         const u = maybe(5).match( (x) => x + 1, () => 0);
         expect(u).toBe(6);
-        const v = maybe(null).match( (x) => x + 1, () => 0);
+        const v = maybe<number>(null).match( (x) => x + 1, () => 0);
         expect(v).toBe(0);
     });
 });
@@ -30,7 +30,7 @@ describe ("Maybe.foreach", () => {
         let x = 1;
         maybe(5).forEach( (y) => x = x + y);
         expect(x).toBe(6);
-        maybe(null).forEach( (y) => x = x + y);
+        maybe<number>(null).forEach( (y) => x = x + y);
         expect(x).toBe(6);
     });
 });
@@ -67,7 +67,7 @@ describe ("A Maybe", () => {
         expect(m.unsafeLift()).toBe(5);
     });
     it("should map to new monads correctly for Nothing", () => {
-        const m = maybe(null).map( x => 2 * x).flatMap( y => maybe(y / 2));
+        const m = maybe<number>(null).map( x => 2 * x).flatMap( y => maybe(y / 2));
         expect(m.nothing).toBe(true);
         expect(m.orElse(0)).toBe(0);
     });

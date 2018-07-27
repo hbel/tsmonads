@@ -12,8 +12,8 @@ describe ("A left value", () => {
     });
     it("should be mappable using map and flatmap", () => {
         const m = left<number, number>(5);
-        expect(m.map(x => x + 2).left).toBe(5);
-        expect(m.map(x => x > 2).left).toBe(5);
+        expect(m.map((x: any) => x + 2).left).toBe(5);
+        expect(m.map((x: any) => x > 2).left).toBe(5);
     });
 });
 
@@ -27,8 +27,8 @@ describe ("A right value", () => {
     });
     it("should be mappable using map and flatmap", () => {
         const m = right(5);
-        expect(m.map(x => x + 2).right).toBe(7);
-        expect(m.map(x => x > 2).right).toBe(true);
+        expect(m.map((x: number) => x + 2).right).toBe(7);
+        expect(m.map((x: number) => x > 2).right).toBe(true);
     });
 });
 

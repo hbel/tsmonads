@@ -21,10 +21,10 @@ export function right<L, R>(value: R) {
  * Either monad
  */
 export class Either<L, R> implements Monad<R> {
-    private readonly _left: L;
-    private readonly _right: R;
+    private readonly _left?: L;
+    private readonly _right?: R;
 
-    constructor(left: L, right: R) {
+    constructor(left: L | undefined, right: R | undefined) {
         if ( left !== undefined && right !== undefined )
             throw new Error("Can only set left or right to a defined value!");
         this._left = left;
@@ -62,7 +62,7 @@ export class Either<L, R> implements Monad<R> {
      */
     get left(): L {
         if ( this.isLeft() )
-            return this._left;
+            return this._left!;
         throw new Error("No left value");
     }
 
@@ -71,7 +71,7 @@ export class Either<L, R> implements Monad<R> {
      */
     get right(): R {
         if ( this.isRight() )
-            return this._right;
+            return this._right!;
         throw new Error("No right value");
     }
 
@@ -85,10 +85,10 @@ export class Either<L, R> implements Monad<R> {
     /**
      * Call forEach on the right value
      */
-    forEach(f: (x: R) => void ): void { if ( this.isRight() ) f(this._right); }
+    forEach(f: (x: R) => void ): void { if ( this.isRight() ) f(this._right!); }
 
     unsafeLift = () => {
-        if (this.isRight() ) return this._right;
+        if (this.isRight() ) return this._right!;
         throw new Error("Is not a right value");
     }
 
@@ -97,5 +97,5 @@ export class Either<L, R> implements Monad<R> {
     /**
      * Convert to maybe
      */
-    toMaybe = (): Maybe<R> => this.isRight() ? new Just(this._right) : new Nothing();
+    toMaybe = (): Maybe<R> => this.isRight() ? new Just(this._right!) : new Nothing();
 }
