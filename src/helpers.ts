@@ -3,7 +3,7 @@
  * which are needed in all monads
  */
 export interface Monad<T> {
-    unit<V>(value: V): any;
+    unit<V>(value: V): Monad<V>;
     map<V>(f: (x: T) => V ): Monad<V>;
     flatMap<V>(f: (x: T) => Monad<V> ): Monad<V>;
     forEach(f: (x: T) => void ): void;
@@ -39,6 +39,11 @@ export function forEach<T, U extends Monad<T>>( coll: Array<U>, f: (x: T) => voi
 };
 
 // Run map for each element of an array of monads
-export function map<T, S, U extends Monad<T>>( coll: Array<U>, f: (x: T) => S ): any {
-    coll.map( (y: Monad<T>) => y.map(f) );
+export function map<T, S, U extends Monad<T>>( coll: Array<U>, f: (x: T) => S ): Array<Monad<S>> {
+    return coll.map( (y: Monad<T>) => y.map(f) );
+};
+
+// Run flatmap for each element of an array of monads
+export function flatMap<T, S, U extends Monad<T>>( coll: Array<U>, f: (x: T) => Monad<S> ): Array<Monad<S>> {
+    return coll.map( (y: Monad<T>) => y.flatMap(f) );    
 };
