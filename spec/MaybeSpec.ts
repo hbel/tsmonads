@@ -1,4 +1,4 @@
-import {flatten, maybe, forEach, map, Maybe} from "./../monads";
+import {flatten, maybe, forEach, Maybe} from "./../monads";
 import { nothing } from "../src/maybemonad";
 
 const jasmine = require("jasmine");
@@ -96,12 +96,14 @@ describe ("A Maybe", () => {
 
         let mbList = [1, 2, 3, 4].map(x => maybe(x)); // Array of Maybe<number>
         // Turn this into a Maybe[Array<number>]
-        let mbArray = flatten<number, Maybe<number>>(mbList);
+        let mbArray = flatten(mbList) as Maybe<Array<number>>;
         expect(mbArray.nothing).toBe(false);
         let normalArray = mbArray.orElse([]);
         expect(normalArray.length).toBe(4);
         expect(normalArray[0]).toBe(1);
         expect(normalArray[2]).toBe(3);
+        let mbArray2 = Maybe.flatten(mbList);
+        expect(mbArray2.nothing).toBe(false);
     });
 });
 

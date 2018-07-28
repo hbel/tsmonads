@@ -1,4 +1,4 @@
-import {Monad} from "./helpers";
+import {Monad, flatten} from "./helpers";
 
 export const nothing = () => new Nothing();
 
@@ -13,28 +13,28 @@ export function maybe<T>(val: T | undefined | null): Maybe<T> {
 /**
  * Maybe monad.
  */
-export interface Maybe<T> extends Monad<T> {
+export abstract class Maybe<T> implements Monad<T> {
     /**
      * Map the contained value with the given function
      */
-    map<U>(f: (x: T) => U): Maybe<U>;
+    abstract map<U>(f: (x: T) => U): Maybe<U>;
 
     /**
      * FlatMap the monad using the given function which in turn will return a monad
      */
-    flatMap<U>(f: (x: T) => Maybe<U>): Maybe<U>;
+    abstract flatMap<U>(f: (x: T) => Maybe<U>): Maybe<U>;
 
     /**
      * Safe way to extract the value from the monad. If it contains
      * a value, return it, otherwise return the given default value
      */
-    orElse(def: T): T;
+    abstract orElse(def: T): T;
 
     /**
      *  Lift the monad to get its value. Note that this will cause
      *  a runtime error if the monad is Nothing!
      * */
-    unsafeLift(): T;
+    abstract unsafeLift(): T;
 
     /**
      *  Is this monad "nothing"?
@@ -44,19 +44,25 @@ export interface Maybe<T> extends Monad<T> {
     /**
      *  Is this monad not "nothing"?
      */
-    hasValue(): boolean;
+    abstract hasValue(): boolean;
 
     /**
      * Match the monad by executing a specific funtions if it holds a value,
      * and another function if not
      */
-    match<U>( just: (x: T) => U, nothing: () => U ): U;
+    abstract match<U>( just: (x: T) => U, nothing: () => U ): U;
     
     /**
      * Run forEach on the monad. Will be executed only if the monad 
      * contains a value.
      */
-    forEach(f: (x: T) => void ): void;
+    abstract forEach(f: (x: T) => void ): void;
+
+    abstract unit<V>(x: V): Maybe<V>;
+
+    static flatten<T>(coll: Array<Maybe<T>> ): Maybe<Array<T>> {
+        return flatten(coll) as Maybe<Array<T>>;
+    }
 }
 
 /**

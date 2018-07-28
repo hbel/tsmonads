@@ -78,4 +78,5 @@ it using the _left()_ and _right()_ factory functions.
 ## Further utility functions
 
 Besides the above functions, we also provide some utilities you can use when working with arrays of Monads. The ```clean()``` function will extract all values 
-from the monads, throw away any non-values (Nothing, Failure, Left) and return an array of the extracted values. The ```flatten()``` function will turn an ```Array<Monad<T>>``` into a ```Monad<Array<T>>```. Note that you will receive a "negatively typed" array if even single value in the original array is Nothing/Failure/Left. Otherwise, you'll get a ```Just<Array<T>>```, ```Success<Array<T>>``` or ```Right<Array<T>>```.
+from the monads, throw away any non-values (Nothing, Failure, Left) and return an array of the extracted values. The ```flatten()``` function will turn an ```Array<Monad<T>>``` into a ```Monad<Array<T>>```. Note that you will receive a "negatively typed" array if even single value in the original array is Nothing/Failure/Left. Otherwise, you'll get a ```Just<Array<T>>```, ```Success<Array<T>>``` or ```Right<Array<T>>```. All monad types provide a typed wrapper 
+of flatten as a static method so you don't need to type-cast any results of the flatten method.

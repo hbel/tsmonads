@@ -13,9 +13,9 @@ export interface Monad<T> {
 
 // The flatten functions allows you to turn an array of monads of T into
 // an monad of array of T.
-export function flatten<T, U extends Monad<T>>( l: Array<U> ): any {
+export function flatten<T, U extends Monad<T>>( l: Array<U> ): Monad<Array<T>> {
     if ( !l || l.length === 0 )
-        return null;
+        throw "Array is empty or non-existent";
     let unit = l[0].unit;
     function rec( l: Array<U>, r: Array<T> ): any {
         if ( l.length === 0 ) {
@@ -36,14 +36,4 @@ export function clean<T, U extends Monad<T>>(coll: Array<U>): Array<T> {
 // Run foreach on an array of monads
 export function forEach<T, U extends Monad<T>>( coll: Array<U>, f: (x: T) => void ): void{
     coll.forEach( (y: Monad<T>) => y.forEach(f) );
-};
-
-// Run map for each element of an array of monads
-export function map<T, S, U extends Monad<T>>( coll: Array<U>, f: (x: T) => S ): Array<Monad<S>> {
-    return coll.map( (y: Monad<T>) => y.map(f) );
-};
-
-// Run flatmap for each element of an array of monads
-export function flatMap<T, S, U extends Monad<T>>( coll: Array<U>, f: (x: T) => Monad<S> ): Array<Monad<S>> {
-    return coll.map( (y: Monad<T>) => y.flatMap(f) );    
 };

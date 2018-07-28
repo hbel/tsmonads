@@ -1,4 +1,4 @@
-import {Monad} from "./helpers";
+import {Monad, flatten} from "./helpers";
 import {Maybe, maybe, Nothing} from "./maybemonad";
 
 /**
@@ -18,16 +18,16 @@ export function call<T>( f: () => T ): Try<T> {
 /**
  *  Try monad
  */
-export interface Try<T> extends Monad<T> {
+export abstract class Try<T> implements Monad<T> {
     /**
      * Function that should be called if this is a Success
      */
-    onSuccess( f: (x: T) => void ): Try<T>;
+    abstract onSuccess( f: (x: T) => void ): Try<T>;
 
     /**
      * Function to be called if this is a Failure
      */
-    onFailure( f: (error: Error) => void ): Try<T>;
+    abstract onFailure( f: (error: Error) => void ): Try<T>;
 
     // Whether the call has succceeded without an exception
     succeeded: boolean;
@@ -47,34 +47,40 @@ export interface Try<T> extends Monad<T> {
     /**
      * Map the result using another function
      */
-    map<U>( f: (x: T) => U ): Try<U>;
+    abstract map<U>( f: (x: T) => U ): Try<U>;
 
     /**
      * Flat map the result
      */
-    flatMap<U>( f: (x: T) => Try<U> ): Try<U>;
+    abstract flatMap<U>( f: (x: T) => Try<U> ): Try<U>;
 
     /**
      * Run forEach on the monad. Will be executed only if the monad 
      * contains a value.
      */
-    forEach(f: (x: T) => void ): void;
+    abstract forEach(f: (x: T) => void ): void;
 
     /**
      *  Lift the monad to get its value. Note that this will cause
      *  a runtime error if the monad is Nothing!
      * */
-    unsafeLift(): T;
+    abstract unsafeLift(): T;
 
     /**
      *  Is this monad not "nothing"?
      */
-    hasValue(): boolean;
+    abstract hasValue(): boolean;
 
     /**
      * Convert try into a maybe
      */
-    toMaybe(): Maybe<T>
+    abstract toMaybe(): Maybe<T>;
+
+    abstract unit<V>(x: V): Try<V>;
+
+    static flatten<T>(coll: Array<Try<T>> ): Try<Array<T>> {
+        return flatten(coll) as Try<Array<T>>;
+    }
 }
 
 export class Success<T> implements Try<T> {

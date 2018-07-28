@@ -3,3 +3,5 @@ node_modules/
 # webpack dist
 yarn.lock
 lib/
+coverage/
+.nyc_output/

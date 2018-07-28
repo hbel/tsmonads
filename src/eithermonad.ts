@@ -1,4 +1,4 @@
-import {Monad} from "./helpers";
+import {Monad, flatten} from "./helpers";
 import {Just, Nothing, Maybe} from "./maybemonad";
 
 /**
@@ -98,4 +98,8 @@ export class Either<L, R> implements Monad<R> {
      * Convert to maybe
      */
     toMaybe = (): Maybe<R> => this.isRight() ? new Just(this._right!) : new Nothing();
+
+    static flatten<L,R>(coll: Array<Either<L,R>> ): Either<Array<L>,Array<R>> {
+        return flatten(coll) as Either<Array<L>,Array<R>>;
+    }
 }

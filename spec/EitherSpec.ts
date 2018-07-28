@@ -48,14 +48,18 @@ describe ("Converting either monad to maybe monad", () => {
 describe ("Flattening an array of Eithers", () => {
     it("should give you an Either array", () => {
         const eithers = [right(5), right(4), right(3)];
-        const flattened = flatten<number, Either<any, number>>(eithers);
+        const flattened = flatten(eithers) as Either<Array<any>, Array<number>>;
         expect(flattened.isRight()).toBe(true);
+        const flattened2 = Either.flatten(eithers);
+        expect(flattened2.isRight()).toBe(true);
     });
     it("should be a left if any either is a left", () => {
-        const eithers = [right(5), left(4), right(3)];
-        const flattened = flatten(eithers);
+        const eithers = [right<number, number>(5), left<number, number>(4), right<number, number>(3)];
+        const flattened = flatten(eithers) as Either<Array<number>,Array<number>>;
         expect(flattened.isLeft()).toBe(true);
-        expect(flatten([left(5), right(4), right(3)]).isLeft()).toBe(true);
-        expect(flatten([right(5), right(4), left(3)]).isLeft()).toBe(true);
+        expect((flatten([left<number, number>(5), right<number, number>(4), right<number, number>(3)]) as Either<Array<number>,Array<number>>).isLeft()).toBe(true);
+        expect((flatten([right<number, number>(5), right<number, number>(4), left<number, number>(3)]) as Either<Array<number>,Array<number>>).isLeft()).toBe(true);
+        expect(Either.flatten([left<number, number>(5), right<number, number>(4), right<number, number>(3)]).isLeft()).toBe(true);
+        expect(Either.flatten([right<number, number>(5), right<number, number>(4), left<number, number>(3)]).isLeft()).toBe(true);
     });
 });
