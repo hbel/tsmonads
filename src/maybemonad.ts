@@ -1,5 +1,7 @@
 import {Monad} from "./helpers";
 
+export const nothing = () => new Nothing();
+
 // Factory function for maybes. Depending on the argument will return a Just<T> or Nothing
 export function maybe<T>(val: T | undefined | null): Maybe<T> {
     if (val === null || val === undefined)

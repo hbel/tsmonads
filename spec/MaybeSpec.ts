@@ -1,4 +1,5 @@
 import {flatten, maybe, forEach, map, Maybe} from "./../monads";
+import { nothing } from "../src/maybemonad";
 
 const jasmine = require("jasmine");
 
@@ -11,6 +12,14 @@ describe ("A maybe factory", () => {
     });
     it("should return Nothing for a value of null", () => {
         const m = maybe<number>(null);
+        expect(m.nothing).toBe(true);
+        expect(m.orElse(0)).toBe(0);
+    });
+});
+
+describe ("nothing()", () => {
+    it("should set a maybe of arbitrary type to nothing", () => {
+        const m: Maybe<number> = nothing();
         expect(m.nothing).toBe(true);
         expect(m.orElse(0)).toBe(0);
     });
