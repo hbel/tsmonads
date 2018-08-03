@@ -99,6 +99,9 @@ export class Either<L, R> implements Monad<R> {
      */
     toMaybe = (): Maybe<R> => this.isRight() ? new Just(this._right!) : new Nothing();
 
+    /**
+     * Turn an array of monads of T into a monad of array of T.
+     */
     static flatten<L,R>(coll: Array<Either<L,R>> ): Either<Array<L>,Array<R>> {
         return flatten(coll) as Either<Array<L>,Array<R>>;
     }

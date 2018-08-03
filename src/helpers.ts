@@ -37,3 +37,8 @@ export function clean<T, U extends Monad<T>>(coll: Array<U>): Array<T> {
 export function forEach<T, U extends Monad<T>>( coll: Array<U>, f: (x: T) => void ): void{
     coll.forEach( (y: Monad<T>) => y.forEach(f) );
 };
+
+// Remove one monadic level from the given Argument
+export function chain<T, U extends Monad<Monad<T>>>(monad: U): Monad<T> {
+    return monad.flatMap(x => x);
+}

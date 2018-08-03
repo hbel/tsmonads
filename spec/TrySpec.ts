@@ -28,6 +28,14 @@ describe ("The call function", () => {
     });
 });
 
+describe("A try of a try", () => {
+    it("can be chained into a try", () => {
+        const m = call(() => call(() => 5));
+        expect(Try.chain(m).succeeded).toBe(true);
+        expect(Try.chain(m).result).toBe(5);
+    })
+});
+
 describe ("Mapping Try monads", () => {
     it("should allow to queue several function calls, even when changing return types", () => {
         const t = call( () => 2 + 3 );

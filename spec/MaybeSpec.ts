@@ -1,5 +1,6 @@
 import {flatten, maybe, forEach, Maybe} from "./../monads";
 import { nothing } from "../src/maybemonad";
+import { chain } from "../src/helpers";
 
 const jasmine = require("jasmine");
 
@@ -57,6 +58,13 @@ describe("On a collection of Maybes", () => {
     });
 });
 
+describe("A maybe of a maybe", () => {
+    it("can be chained into a maybe", () => {
+        const m = maybe(maybe(5))
+        expect(Maybe.chain(m).orUndefined()).toBe(5);
+    })
+});
+
 describe ("A Maybe", () => {
     it("should throw an exception on lifting a nothing", () => {
         const m = maybe(null);
@@ -104,6 +112,12 @@ describe ("A Maybe", () => {
         expect(normalArray[2]).toBe(3);
         let mbArray2 = Maybe.flatten(mbList);
         expect(mbArray2.nothing).toBe(false);
+    });
+    it("should be a value for Just and undefined when using orUndefined()", () => {
+        const m = maybe(5);
+        const n = nothing();
+        expect(m.orUndefined()).toBe(5);
+        expect(n.orUndefined()).toBe(undefined);
     });
 });
 

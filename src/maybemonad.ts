@@ -1,4 +1,4 @@
-import {Monad, flatten} from "./helpers";
+import {Monad, flatten, chain} from "./helpers";
 
 export const nothing = () => new Nothing();
 
@@ -31,6 +31,11 @@ export abstract class Maybe<T> implements Monad<T> {
     abstract orElse(def: T): T;
 
     /**
+     * Return the value from the monad or undefined if it is Nothing.
+     */
+    abstract orUndefined(): T | undefined;
+
+    /**
      *  Lift the monad to get its value. Note that this will cause
      *  a runtime error if the monad is Nothing!
      * */
@@ -60,6 +65,16 @@ export abstract class Maybe<T> implements Monad<T> {
 
     abstract unit<V>(x: V): Maybe<V>;
 
+    /**
+     * Remove one monadic level from the given Argument
+     */
+    static chain<T, U extends Maybe<Maybe<T>>>(monad: U): Maybe<T> {
+        return chain(monad) as Maybe<T>;
+    }
+
+    /**
+     * Turn an array of monads of T into a monad of array of T.
+     */
     static flatten<T>(coll: Array<Maybe<T>> ): Maybe<Array<T>> {
         return flatten(coll) as Maybe<Array<T>>;
     }
@@ -86,6 +101,10 @@ export class Just<T> implements Maybe<T> {
         return this._value;
     }
 
+    orUndefined(): T | undefined {
+        return this._value;
+    }
+
     unsafeLift(): T {
         return this._value;
     }
@@ -106,15 +125,19 @@ export class Just<T> implements Maybe<T> {
 export class Nothing implements Maybe<any> {
 
     map<T, U>(f: (x: T) => U): Maybe<U> {
-        return new Nothing();
+        return nothing();
     }
 
     flatMap<T, U>(f: (x: T) => Maybe<U>): Maybe<U> {
-        return new Nothing();
+        return nothing();
     }
 
     orElse<T>(def: T): T {
         return def;
+    }
+
+    orUndefined(): undefined {
+        return undefined;
     }
 
     unsafeLift<T>(): T {

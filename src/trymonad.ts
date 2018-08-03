@@ -1,4 +1,4 @@
-import {Monad, flatten} from "./helpers";
+import {Monad, flatten, chain} from "./helpers";
 import {Maybe, maybe, Nothing} from "./maybemonad";
 
 /**
@@ -78,6 +78,16 @@ export abstract class Try<T> implements Monad<T> {
 
     abstract unit<V>(x: V): Try<V>;
 
+    /**
+     * Remove one monadic level from the given Argument
+     */
+    static chain<T, U extends Try<Try<T>>>(monad: U): Try<T> {
+        return chain(monad) as Try<T>;
+    }
+
+    /**
+     * Turn an array of monads of T into a monad of array of T.
+     */
     static flatten<T>(coll: Array<Try<T>> ): Try<Array<T>> {
         return flatten(coll) as Try<Array<T>>;
     }
