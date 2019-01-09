@@ -35,6 +35,15 @@ describe ("Maybe.match", () => {
     });
 });
 
+describe ("Maybe.reduce", () => {
+    it("should return a value in", () => {
+        const u = maybe({test: "test"}).reduce( (_, v) => v.test, "");
+        expect(u).toBe("test");
+        const v = nothing().reduce( (_, v) => v.test, "dummy");
+        expect(v).toBe("dummy");
+    })
+})
+
 describe ("Maybe.foreach", () => {
     it("will run a function only if the monad holds a value", () => {
         let x = 1;
@@ -65,6 +74,18 @@ describe("A maybe of a maybe", () => {
     })
 });
 
+describe("Maybe.if", () => {
+    it("returns true", () => {
+        const m: boolean = maybe(5).if(x => x < 6);
+        expect(m).toBeTruthy();
+    })
+    it("returns false", () => {
+        const m: boolean = maybe(5).if(x => x > 6);
+        expect(m).toBeFalsy();
+        expect(nothing().if(x => x > 5)).toBeFalsy();
+    })
+})
+
 describe ("A Maybe", () => {
     it("should throw an exception on lifting a nothing", () => {
         const m = maybe(null);
@@ -72,9 +93,9 @@ describe ("A Maybe", () => {
     });
     it("should also work when encapsulating a boolean", () => {
         const m = maybe(true);        
-        expect(m.hasValue()).toBe(true);
+        expect(m.hasValue).toBe(true);
         const n = maybe(false);
-        expect(m.hasValue()).toBe(true);
+        expect(m.hasValue).toBe(true);
         expect(m.nothing).toBe(false);
     });
     it("should map to new monads correctly for correct result", () => {

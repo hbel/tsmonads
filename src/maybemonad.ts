@@ -36,6 +36,11 @@ export abstract class Maybe<T> implements Monad<T> {
     abstract orUndefined(): T | undefined;
 
     /**
+     * Returns true if the given function returns true for a Just, and false otherwise
+     */
+    abstract if(f: (x: T) => boolean): boolean;
+
+    /**
      *  Lift the monad to get its value. Note that this will cause
      *  a runtime error if the monad is Nothing!
      * */
@@ -49,7 +54,7 @@ export abstract class Maybe<T> implements Monad<T> {
     /**
      *  Is this monad not "nothing"?
      */
-    abstract hasValue(): boolean;
+    hasValue: boolean;
 
     /**
      * Match the monad by executing a specific funtions if it holds a value,
@@ -64,6 +69,11 @@ export abstract class Maybe<T> implements Monad<T> {
     abstract forEach(f: (x: T) => void ): void;
 
     abstract unit<V>(x: V): Maybe<V>;
+
+    /**
+     * Return the start value if the monad is nothing, and f() of the monad if it contains a value
+     */
+    abstract reduce<V>(f: (total: V, current: T) => V, start: V): V;
 
     /**
      * Remove one monadic level from the given Argument
@@ -89,6 +99,8 @@ export class Just<T> implements Maybe<T> {
             throw new Error("Value must be not null and not undefined");
     }
 
+    reduce<V>(f: (total: V, current: T) => V, _: V) { return f(_, this._value); }
+
     map<U>(f: (x: T) => U): Maybe<U> {
         return new Just<U>(f(this._value));
     }
@@ -105,12 +117,16 @@ export class Just<T> implements Maybe<T> {
         return this._value;
     }
 
+    if(f: (x: T) => boolean): boolean {
+        return f(this._value);
+    }
+
     unsafeLift(): T {
         return this._value;
     }
 
     get nothing(): boolean { return false; };
-    hasValue(): boolean { return true; };
+    get hasValue(): boolean { return true; };
 
     unit = maybe;
 
@@ -123,6 +139,8 @@ export class Just<T> implements Maybe<T> {
  * Nothing class. If a maybe monad contains no value, it will be of this type.
  */
 export class Nothing implements Maybe<any> {
+
+    reduce<V>(f: (total: V, current: any) => V, start: V) { return start; }
 
     map<T, U>(f: (x: T) => U): Maybe<U> {
         return nothing();
@@ -140,12 +158,16 @@ export class Nothing implements Maybe<any> {
         return undefined;
     }
 
+    if(f: (x: any) => boolean): boolean {
+        return false;
+    }
+
     unsafeLift<T>(): T {
         throw new Error("Nothing contains no value");
     }
 
     get nothing(): boolean { return true; }
-    hasValue(): boolean { return false; }
+    get hasValue(): boolean { return false; }
 
     unit = maybe;
 

@@ -8,7 +8,8 @@ export interface Monad<T> {
     flatMap<V>(f: (x: T) => Monad<V> ): Monad<V>;
     forEach(f: (x: T) => void ): void;
     unsafeLift(): T;
-    hasValue(): boolean;
+    reduce<V>(f: (total: V, current: T) => V, start: V): V;
+    hasValue: boolean;
 }
 
 // The flatten functions allows you to turn an array of monads of T into
@@ -30,7 +31,7 @@ export function flatten<T, U extends Monad<T>>( l: Array<U> ): Monad<Array<T>> {
 
 // Remove all "empty" monads from an array of monads and lift the remaining values
 export function clean<T, U extends Monad<T>>(coll: Array<U>): Array<T> {
-    return coll.filter(elem => elem.hasValue()).map(elem => elem.unsafeLift());
+    return coll.filter(elem => elem.hasValue).map(elem => elem.unsafeLift());
 }
 
 // Run foreach on an array of monads

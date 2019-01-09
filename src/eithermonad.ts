@@ -32,10 +32,18 @@ export class Either<L, R> implements Monad<R> {
     }
 
     /**
+     * Return the start value if the monad is nothing, and f() of the monad if it contains a value
+     */
+    reduce<V>(f: (total: V, current: R) => V, start: V): V {
+        if (this.isLeft) return start;
+        return f(start, this._right!);
+    }
+
+    /**
      * Map the contained value with the given function. Note that the type of the left value does not change!
      */
     map<V>(f: (x: R) => V): Either<L, V> {
-        if ( this.isLeft() ) return left<L, V>(this.left);
+        if ( this.isLeft ) return left<L, V>(this.left);
         return right<L, V>( f(this.right) );
     }
 
@@ -43,25 +51,25 @@ export class Either<L, R> implements Monad<R> {
      * FlatMap the monad using the given function which in turn will return a monad. Note that the type of the left value does not change!
      */
     flatMap<V>(f: (x: R) => Either<L, V>): Either<L, V> {
-        if ( this.isLeft() ) return left<L, V>(this.left);
+        if ( this.isLeft ) return left<L, V>(this.left);
         return f(this.right);
     }
 
     /**
      * Whether the left holds a value
      */
-    isLeft = () => (this._right === null || this._right === undefined);
+    get isLeft() { return (this._right === null || this._right === undefined); }
 
     /**
      * Whether the right holds a value
      */
-    isRight = () => (this._left === null || this._left === undefined);
+    get isRight() { return  (this._left === null || this._left === undefined); }
 
     /**
      * Return the left value. Will throw a runtime error if there is no left value
      */
     get left(): L {
-        if ( this.isLeft() )
+        if ( this.isLeft )
             return this._left!;
         throw new Error("No left value");
     }
@@ -70,7 +78,7 @@ export class Either<L, R> implements Monad<R> {
      * Return the right value. Will throw a runtime error if there is no right value
      */
     get right(): R {
-        if ( this.isRight() )
+        if ( this.isRight )
             return this._right!;
         throw new Error("No right value");
     }
@@ -85,19 +93,19 @@ export class Either<L, R> implements Monad<R> {
     /**
      * Call forEach on the right value
      */
-    forEach(f: (x: R) => void ): void { if ( this.isRight() ) f(this._right!); }
+    forEach(f: (x: R) => void ): void { if ( this.isRight ) f(this._right!); }
 
     unsafeLift = () => {
-        if (this.isRight() ) return this._right!;
+        if (this.isRight ) return this._right!;
         throw new Error("Is not a right value");
     }
 
-    hasValue = () => this.isRight();
+    get hasValue() { return this.isRight; }
 
     /**
      * Convert to maybe
      */
-    toMaybe = (): Maybe<R> => this.isRight() ? new Just(this._right!) : new Nothing();
+    toMaybe = (): Maybe<R> => this.isRight ? new Just(this._right!) : new Nothing();
 
     /**
      * Turn an array of monads of T into a monad of array of T.

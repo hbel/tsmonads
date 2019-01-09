@@ -69,7 +69,7 @@ export abstract class Try<T> implements Monad<T> {
     /**
      *  Is this monad not "nothing"?
      */
-    abstract hasValue(): boolean;
+    hasValue: boolean;
 
     /**
      * Convert try into a maybe
@@ -77,6 +77,11 @@ export abstract class Try<T> implements Monad<T> {
     abstract toMaybe(): Maybe<T>;
 
     abstract unit<V>(x: V): Try<V>;
+
+    /**
+     * Return the start value if the monad is nothing, and f() of the monad if it contains a value
+     */
+    abstract reduce<V>(f: (total: V, current: T) => V, start: V): V;
 
     /**
      * Remove one monadic level from the given Argument
@@ -96,7 +101,8 @@ export abstract class Try<T> implements Monad<T> {
 export class Success<T> implements Try<T> {
     constructor(private readonly _value: T) {}
     onSuccess( f: (x: T) => void ): Try<T> { f(this._value); return this; }
-    onFailure( f: (error: Error) => void ): Try<T> { return this; }
+    onFailure( _: (error: Error) => void ): Try<T> { return this; }
+    reduce<V>( f: (total: V, current: T) => V, start: V): V { return f(start, this._value); }
     get succeeded(): boolean { return true; }
     get result(): T { return this._value; }
     get error(): Error { throw new Error("No error occured"); }
@@ -111,7 +117,7 @@ export class Success<T> implements Try<T> {
     }
     forEach = (f: (x: T) => void ): void => f(this._value);
     unsafeLift = (): T =>  this._value;
-    hasValue = () => true;
+    get hasValue() { return true; }
     toMaybe = () => maybe(this._value);
 }
 
@@ -119,6 +125,7 @@ export class Failure implements Try<any> {
     constructor(private readonly _error: Error) {}
     onSuccess( f: (x: any) => void ): Try<any> { return this; }
     onFailure( f: (error: Error) => void ): Try<any> { f(this._error); return this; }
+    reduce<V>( _: (total: V, current: any) => V, start: V): V { return start }
     get succeeded(): boolean { return false; }
     get result(): any { throw new Error("Try resulted in an error!"); }
     get error(): Error { return this._error; }
@@ -135,6 +142,6 @@ export class Failure implements Try<any> {
     unsafeLift<T>(): T {
         throw new Error("Is a failure");
     }
-    hasValue = () => false;
+    get hasValue() { return false; }
     toMaybe = () => new Nothing();
 }

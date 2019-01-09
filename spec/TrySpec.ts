@@ -52,15 +52,24 @@ describe ("Mapping Try monads", () => {
     });
 });
 
+describe ("Try.reduce", () => {
+    it("should return a value in", () => {
+        const u = call<any>(() => ({test: "test"})).reduce( (_, v) => v.test, "");
+        expect(u).toBe("test");
+        const v = call<any>(() => { throw "error"; }).reduce( (_, v) => v.test, "dummy");
+        expect(v).toBe("dummy");
+    })
+})
+
 describe ("Converting try monad to maybe monad", () => {
     it("Should convert a Success into a Just", () => {
         const t = call( () => 2 + 3 );
-        expect(t.toMaybe().hasValue()).toBe(true);
+        expect(t.toMaybe().hasValue).toBe(true);
         expect(t.toMaybe().orElse(0)).toBe(5);
     })
     it("Should convert a Failure into a Nothing", () => {
         const t = call<number>( () => { throw "Error"; } );
-        expect(t.toMaybe().hasValue()).toBe(false);
+        expect(t.toMaybe().hasValue).toBe(false);
         expect(t.toMaybe().orElse(0)).toBe(0);
     })
 });
