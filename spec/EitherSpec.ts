@@ -1,7 +1,4 @@
 import {left, right, flatten, Either} from "./../monads";
-import { stringify } from "querystring";
-
-const jasmine = require("jasmine");
 
 describe ("A left value", () => {
     it("should return an Either that has a left and no right value", () => {
@@ -67,9 +64,13 @@ describe ("Flattening an array of Eithers", () => {
         const eithers = [right<number, number>(5), left<number, number>(4), right<number, number>(3)];
         const flattened = flatten(eithers) as Either<Array<number>,Array<number>>;
         expect(flattened.isLeft).toBe(true);
-        expect((flatten([left<number, number>(5), right<number, number>(4), right<number, number>(3)]) as Either<Array<number>,Array<number>>).isLeft).toBe(true);
-        expect((flatten([right<number, number>(5), right<number, number>(4), left<number, number>(3)]) as Either<Array<number>,Array<number>>).isLeft).toBe(true);
-        expect(Either.flatten([left<number, number>(5), right<number, number>(4), right<number, number>(3)]).isLeft).toBe(true);
-        expect(Either.flatten([right<number, number>(5), right<number, number>(4), left<number, number>(3)]).isLeft).toBe(true);
+        expect((flatten([left<number, number>(5), right<number, number>(4), 
+            right<number, number>(3)]) as Either<Array<number>,Array<number>>).isLeft).toBe(true);
+        expect((flatten([right<number, number>(5), right<number, number>(4), 
+            left<number, number>(3)]) as Either<Array<number>,Array<number>>).isLeft).toBe(true);
+        expect(Either.flatten([left<number, number>(5), right<number, number>(4), 
+            right<number, number>(3)]).isLeft).toBe(true);
+        expect(Either.flatten([right<number, number>(5), right<number, number>(4), 
+            left<number, number>(3)]).isLeft).toBe(true);
     });
 });

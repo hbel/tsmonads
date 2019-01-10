@@ -1,12 +1,14 @@
+import { nothing } from "./maybemonad";
+
 /**
  * Base interface for monads. Defines a unit operation and a flatMap operation,
  * which are needed in all monads
  */
 export interface Monad<T> {
     unit<V>(value: V): Monad<V>;
-    map<V>(f: (x: T) => V ): Monad<V>;
-    flatMap<V>(f: (x: T) => Monad<V> ): Monad<V>;
-    forEach(f: (x: T) => void ): void;
+    map<V>(f: (x: T) => V): Monad<V>;
+    flatMap<V>(f: (x: T) => Monad<V>): Monad<V>;
+    forEach(f: (x: T) => void): void;
     unsafeLift(): T;
     reduce<V>(f: (total: V, current: T) => V, start: V): V;
     hasValue: boolean;
@@ -14,11 +16,14 @@ export interface Monad<T> {
 
 // The flatten functions allows you to turn an array of monads of T into
 // an monad of array of T.
-export function flatten<T, U extends Monad<T>>( l: Array<U> ): Monad<Array<T>> {
-    if ( !l || l.length === 0 )
+export function flatten<T, U extends Monad<T>>(l: Array<U>): Monad<Array<T>> {
+    if (!l) {
         throw "Array is empty or non-existent";
+    }
+    if (l.length === 0)
+        return nothing();
     let unit = l[0].unit;
-    function rec( l: Array<U>, r: Array<T> ): any {
+    const rec = ( l: Array<U>, r: Array<T> ): any => {
         if ( l.length === 0 ) {
             return unit(r);
         }
@@ -35,9 +40,9 @@ export function clean<T, U extends Monad<T>>(coll: Array<U>): Array<T> {
 }
 
 // Run foreach on an array of monads
-export function forEach<T, U extends Monad<T>>( coll: Array<U>, f: (x: T) => void ): void{
+export function forEach<T, U extends Monad<T>>(coll: Array<U>, f: (x: T) => void): void {
     coll.forEach( (y: Monad<T>) => y.forEach(f) );
-};
+}
 
 // Remove one monadic level from the given Argument
 export function chain<T, U extends Monad<Monad<T>>>(monad: U): Monad<T> {
