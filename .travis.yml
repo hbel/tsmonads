@@ -10,7 +10,7 @@ node_js:
   - "8"
   - "10"
 before_script:
-  - yarn install codecov -g
+  - yarn global add codecov
   - tsc
 after_success:
   - codecov
