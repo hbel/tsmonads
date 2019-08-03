@@ -1,6 +1,6 @@
 {
   "name": "tsmonads",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Scala-styled monads in TypeScript",
   "main": "lib/monads.js",
   "types": "lib/monads.d.ts",
