@@ -29,6 +29,7 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
+    "mem": "^5.1.1",
     "nyc": "^14.1.1"
   }
 }
