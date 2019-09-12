@@ -9,9 +9,9 @@
         "sourceMap": true,
         "target": "es2016",
         "declaration": true,
-        "strictNullChecks": true,
+        "strictNullChecks": true
     },
-    "include" : [
+    "include": [
         "spec/**/*",
         "src/*.ts",
         "example/*.ts",

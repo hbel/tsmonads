@@ -1,5 +1,5 @@
-import {chain, flatten, Monad} from "./helpers";
-import {Maybe, maybe, Nothing} from "./maybemonad";
+import { anyEquals, chain, flatten, Monad } from "./helpers";
+import { Maybe, maybe, Nothing } from "./maybemonad";
 
 /**
  * Tries to call the given function. Returns a Success if
@@ -96,10 +96,16 @@ export abstract class Try<T> implements Monad<T> {
      * Return the start value if the monad is nothing, and f() of the monad if it contains a value
      */
     public abstract reduce<V>(f: (total: V, current: T) => V, start: V): V;
+
+    /**
+     * Check whether two Try instances are equal
+     * @param that
+     */
+    public abstract equals<U>(that: Try<U>): boolean;
 }
 
 export class Success<T> implements Try<T> {
-    constructor(private readonly _value: T) {}
+    constructor(private readonly _value: T) { }
 
     public onSuccess(f: (x: T) => void): Try<T> { f(this._value); return this; }
 
@@ -127,17 +133,21 @@ export class Success<T> implements Try<T> {
 
     public forEach = (f: (x: T) => void): void => f(this._value);
 
-    public unsafeLift = (): T =>  this._value;
+    public unsafeLift = (): T => this._value;
 
     public get hasValue() {
         return true;
     }
 
     public toMaybe = () => maybe(this._value);
+
+    public equals<U>(that: Try<U>): boolean {
+        return anyEquals(this, that);
+    }
 }
 
 export class Failure implements Try<any> {
-    constructor(private readonly _error: Error) {}
+    constructor(private readonly _error: Error) { }
 
     public onSuccess(f: (x: any) => void): Try<any> { return this; }
 
@@ -164,7 +174,7 @@ export class Failure implements Try<any> {
     }
 
     // tslint:disable-next-line:no-empty
-    public forEach(f: (x: any) => void): void {}
+    public forEach(f: (x: any) => void): void { }
 
     public unsafeLift<T>(): T {
         throw new Error("Is a failure");
@@ -175,4 +185,8 @@ export class Failure implements Try<any> {
     }
 
     public toMaybe = () => new Nothing();
+
+    public equals<U>(that: Try<U>): boolean {
+        return anyEquals(this, that);
+    }
 }

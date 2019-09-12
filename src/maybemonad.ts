@@ -1,4 +1,4 @@
-import {chain, flatten, Monad} from "./helpers";
+import { anyEquals, chain, flatten, Monad } from "./helpers";
 
 export const nothing = () => new Nothing();
 
@@ -50,6 +50,11 @@ export abstract class Maybe<T> implements Monad<T> {
     public abstract flatMap<U>(f: (x: T) => Maybe<U>): Maybe<U>;
 
     /**
+     * If the maybe contains nothing, return the Parameter, otherwise return the maybe itself
+     */
+    public abstract or<U>(defaultValue: Maybe<U>): Maybe<T> | Maybe<U>;
+
+    /**
      * Safe way to extract the value from the monad. If it contains
      * a value, return it, otherwise return the given default value
      */
@@ -89,6 +94,11 @@ export abstract class Maybe<T> implements Monad<T> {
      * Return the start value if the monad is nothing, and f() of the monad if it contains a value
      */
     public abstract reduce<V>(f: (total: V, current: T) => V, start: V): V;
+
+    /**
+     * Check whether two maybes are equal
+     */
+    public abstract equals<U>(that: Maybe<U>): boolean;
 }
 
 /**
@@ -117,6 +127,10 @@ export class Just<T> implements Maybe<T> {
         return f(this._value);
     }
 
+    public or<U>(_: Maybe<U>): Maybe<U> | Maybe<T> {
+        return this;
+    }
+
     public orElse(_: T): T {
         return this._value;
     }
@@ -136,6 +150,10 @@ export class Just<T> implements Maybe<T> {
     public match<U>(just: (x: T) => U, _: () => U): U { return just(this._value); }
 
     public forEach(f: (x: T) => void): void { f(this._value); }
+
+    public equals<U>(that: Maybe<U>): boolean {
+        return anyEquals(this, that);
+    }
 }
 
 /**
@@ -158,6 +176,10 @@ export class Nothing implements Maybe<any> {
         return nothing();
     }
 
+    public or<U>(that: Maybe<U>): Maybe<U> {
+        return that;
+    }
+
     public orElse<T>(defaultValue: T): T {
         return defaultValue;
     }
@@ -177,5 +199,9 @@ export class Nothing implements Maybe<any> {
     public match<U>(_: (x: any) => U, f: () => U): U { return f(); }
 
     // tslint:disable-next-line:no-empty
-    public forEach(f: (x: any) => void): void {}
+    public forEach(f: (x: any) => void): void { }
+
+    public equals<U>(that: Maybe<U>): boolean {
+        return anyEquals(this, that);
+    }
 }

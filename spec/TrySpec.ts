@@ -1,6 +1,6 @@
-import {call, flatten, Try} from "./../monads";
+import { call, flatten, Try } from "./../monads";
 
-describe ("The call function", () => {
+describe("The call function", () => {
     it("should succeed with 5 for a function of f=2+3", () => {
         const t = call(() => 2 + 3);
         expect(t.succeeded).toBe(true);
@@ -34,7 +34,7 @@ describe("A try of a try", () => {
     });
 });
 
-describe ("Mapping Try monads", () => {
+describe("Mapping Try monads", () => {
     it("should allow to queue several function calls, even when changing return types", () => {
         const t = call(() => 2 + 3);
         const t2 = t.map((x) => x + 2).map((x) => x > 5);
@@ -42,7 +42,7 @@ describe ("Mapping Try monads", () => {
         expect(t2.result).toBe(true);
     });
     it("should propagate errors correctly through mapping", () => {
-        const t = call<number>(() => {throw new TypeError("Bar"); });
+        const t = call<number>(() => { throw new TypeError("Bar"); });
         const t2 = t.map((x) => x + 2).map((x) => x > 5);
         expect(t2.succeeded).toBe(false);
         expect(t2.error.message).toBe("Bar");
@@ -50,16 +50,26 @@ describe ("Mapping Try monads", () => {
     });
 });
 
-describe ("Try.reduce", () => {
+describe("Try.reduce", () => {
     it("should return a value in", () => {
-        const u = call<any>(() => ({test: "test"})).reduce((_, t) => t.test, "");
+        const u = call<any>(() => ({ test: "test" })).reduce((_, t) => t.test, "");
         expect(u).toBe("test");
         const v = call<any>(() => { throw new Error("error"); }).reduce((_, t) => t.test, "dummy");
         expect(v).toBe("dummy");
     });
 });
 
-describe ("Converting try monad to maybe monad", () => {
+describe("Try.equal", () => {
+    it("checks equality", () => {
+        const t = call(() => 2 + 3);
+        const u = call<number>(() => { throw new TypeError("Bar"); });
+        expect(t.equals(t)).toBeTruthy();
+        expect(u.equals(u)).toBeTruthy();
+        expect(t.equals(u)).toBeFalsy();
+    });
+});
+
+describe("Converting try monad to maybe monad", () => {
     it("Should convert a Success into a Just", () => {
         const t = call(() => 2 + 3);
         expect(t.toMaybe().hasValue).toBe(true);
@@ -72,7 +82,7 @@ describe ("Converting try monad to maybe monad", () => {
     });
 });
 
-describe ("Flatmap of Try monads", () => {
+describe("Flatmap of Try monads", () => {
     it("should allow to queue several function calls, even when changing return types", () => {
         const t = call(() => 2 + 3);
         const t3 = t.flatMap((x) => call(() => x + 2)).flatMap((x) => call(() => x > 6));
@@ -80,7 +90,7 @@ describe ("Flatmap of Try monads", () => {
         expect(t3.result).toBe(true);
     });
     it("should propagate errors correctly through mapping", () => {
-        const t = call<number>(() => {throw new TypeError("Bar"); });
+        const t = call<number>(() => { throw new TypeError("Bar"); });
         const t3 = t.flatMap((x) => call(() => x + 2));
         expect(t3.succeeded).toBe(false);
         expect(t3.error.message).toBe("Bar");
@@ -88,7 +98,7 @@ describe ("Flatmap of Try monads", () => {
     });
 });
 
-describe ("Flatten on an array of try monads", () => {
+describe("Flatten on an array of try monads", () => {
     it("will produce a Try of an array of the corresponding functions", () => {
         const t1 = call(() => 2 + 3);
         expect(t1.succeeded).toBe(true);

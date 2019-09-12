@@ -1,5 +1,7 @@
 {
-    "extends": ["tslint:latest"],
+    "extends": [
+        "tslint:latest"
+    ],
     "jsRules": {
         "class-name": true,
         "comment-format": [
@@ -45,6 +47,7 @@
         ]
     },
     "rules": {
+        "interface-name": false,
         "class-name": true,
         "comment-format": [
             true,

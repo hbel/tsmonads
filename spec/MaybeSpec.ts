@@ -1,7 +1,7 @@
 import { nothing } from "../src/maybemonad";
-import {flatten, forEach, maybe, Maybe} from "./../monads";
+import { flatten, forEach, maybe, Maybe } from "./../monads";
 
-describe ("A maybe factory", () => {
+describe("A maybe factory", () => {
     it("should return Just(5) for a value of 5", () => {
         const m = maybe(5);
         expect(m.nothing).toBe(false);
@@ -15,7 +15,7 @@ describe ("A maybe factory", () => {
     });
 });
 
-describe ("nothing()", () => {
+describe("nothing()", () => {
     it("should set a maybe of arbitrary type to nothing", () => {
         const m: Maybe<number> = nothing();
         expect(m.nothing).toBe(true);
@@ -23,7 +23,7 @@ describe ("nothing()", () => {
     });
 });
 
-describe ("Maybe.match", () => {
+describe("Maybe.match", () => {
     it("should run a matcher function depending on it's contents", () => {
         const u = maybe(5).match((x) => x + 1, () => 0);
         expect(u).toBe(6);
@@ -32,16 +32,16 @@ describe ("Maybe.match", () => {
     });
 });
 
-describe ("Maybe.reduce", () => {
+describe("Maybe.reduce", () => {
     it("should return a value in", () => {
-        const u = maybe({test: "test"}).reduce((_, t) => t.test, "");
+        const u = maybe({ test: "test" }).reduce((_, t) => t.test, "");
         expect(u).toBe("test");
         const v = nothing().reduce((_, t) => t.test, "dummy");
         expect(v).toBe("dummy");
     });
 });
 
-describe ("Maybe.foreach", () => {
+describe("Maybe.foreach", () => {
     it("will run a function only if the monad holds a value", () => {
         let x = 1;
         maybe(5).forEach((y) => x = x + y);
@@ -83,7 +83,34 @@ describe("Maybe.if", () => {
     });
 });
 
-describe ("A Maybe", () => {
+describe("Maybe.or", () => {
+    it("returns the original Maybe", () => {
+        const m = maybe(5);
+        const n = maybe("foobar");
+        expect(m.or(n)).toEqual(m);
+    });
+    it("returns the given Maybe", () => {
+        const m = nothing();
+        const n = maybe("foobar");
+        expect(m.or(n)).toEqual(n);
+    });
+});
+
+describe("Maybe.equal", () => {
+    it("checks equality", () => {
+        const m = maybe(5);
+        const n = maybe("foobar");
+        const o = nothing();
+        expect(m.equals(m)).toBeTruthy();
+        expect(n.equals(n)).toBeTruthy();
+        expect(o.equals(o)).toBeTruthy();
+        expect(m.equals(n)).toBeFalsy();
+        expect(n.equals(o)).toBeFalsy();
+        expect(m.equals(o)).toBeFalsy();
+    });
+});
+
+describe("A Maybe", () => {
     it("should throw an exception on lifting a nothing", () => {
         const m = maybe(null);
         expect(m.unsafeLift).toThrow(new Error("Nothing contains no value"));

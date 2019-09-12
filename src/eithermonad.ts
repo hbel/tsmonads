@@ -1,24 +1,24 @@
-import {flatten, Monad} from "./helpers";
-import {Just, Maybe, Nothing} from "./maybemonad";
+import { anyEquals, flatten, Monad } from "./helpers";
+import { Just, Maybe, Nothing } from "./maybemonad";
 
 /**
  * Create an Either with a left (errornous) value
  */
 export function left<L, R>(value: L) {
-    if (value ===  null || value === undefined) {
+    if (value === null || value === undefined) {
         throw Error("Value must not be undefined or null!");
     }
-    return  new Either<L, R>(value, undefined);
+    return new Either<L, R>(value, undefined);
 }
 
 /**
  * Create an Either with a right (correct) value
  */
 export function right<L, R>(value: R) {
-    if (value ===  null || value === undefined) {
+    if (value === null || value === undefined) {
         throw Error("Value must not be undefined or null!");
     }
-    return  new Either<L, R>(undefined, value);
+    return new Either<L, R>(undefined, value);
 }
 
 /**
@@ -34,7 +34,7 @@ export class Either<L, R> implements Monad<R> {
     /**
      * Whether the right holds a value
      */
-    get isRight() { return  (this._left === null || this._left === undefined); }
+    get isRight() { return (this._left === null || this._left === undefined); }
 
     /**
      * Return the left value. Will throw a runtime error if there is no left value
@@ -121,4 +121,11 @@ export class Either<L, R> implements Monad<R> {
      * Convert to maybe
      */
     public toMaybe = (): Maybe<R> => this.isRight ? new Just(this._right!) : new Nothing();
+
+    /**
+     * Check whether two Either instances are equal
+     */
+    public equals<U, V>(that: Either<U, V>): boolean {
+        return anyEquals(this, that);
+    }
 }
