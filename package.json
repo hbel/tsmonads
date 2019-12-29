@@ -23,6 +23,7 @@
     "@types/jasmine": "^2.5.46",
     "@types/node": "^7.0.8",
     "glob": "^7.1.1",
+    "handlebars": "^4.5.3",
     "jasmine": "^2.5.3",
     "nodemon": "^1.11.0",
     "tslint": "^5.12.0",
