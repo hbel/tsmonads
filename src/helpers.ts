@@ -1,4 +1,6 @@
-import { nothing } from "./maybemonad";
+import { Either } from "./eithermonad";
+import { Maybe, nothing } from "./maybemonad";
+import { Try } from "./trymonad";
 
 /**
  * Base interface for monads. Defines a unit operation and a flatMap operation,
@@ -64,4 +66,16 @@ export function forEach<T, U extends Monad<T>>(coll: U[], f: (x: T) => void): vo
 // Remove one monadic level from the given Argument
 export function chain<T, U extends Monad<Monad<T>>>(monad: U): Monad<T> {
     return monad.flatMap((x) => x);
+}
+
+export function map<T, U, L extends Monad<T>>(f: (x: T) => U, monad: L)  {
+    return monad.map(f);
+}
+
+export function flatMap<T, U>(f: (x: T) => Monad<U>, monad: Monad<T>) {
+    return monad.flatMap(f);
+}
+
+export function is<T>(f: (x: T) => boolean, monad: Maybe<T>): boolean {
+    return monad.is(f);
 }
