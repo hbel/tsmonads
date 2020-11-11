@@ -1,4 +1,4 @@
-import { nothing } from "../src/maybemonad";
+import { match, nothing, or, orElse, orUndefined } from "../src/maybemonad";
 import { flatten, forEach, maybe, Maybe } from "./../monads";
 
 describe("A maybe factory", () => {
@@ -169,3 +169,24 @@ describe("A Maybe", () => {
         expect(n.orUndefined()).toBe(undefined);
     });
 });
+
+describe("maybe functions, ", () => {
+    it("match should use internal match", () => {
+        const val = (val: number) => val;
+        const none = () => 0;
+        expect(match(maybe(5), val, none)).toBe(maybe(5).match(val, none));
+        expect(match(nothing(), val, none)).toBe(nothing().match(val, none));
+    })
+    it("or should use internal or", () => {
+        expect(or(maybe(5), maybe(6)).unsafeLift()).toBe(5);
+        expect(or(nothing(), maybe(6)).unsafeLift()).toBe(6);
+    })
+    it("orElse should use internal orElse", () => {
+        expect(orElse(maybe(5), 6)).toBe(5);
+        expect(orElse(nothing(), 6)).toBe(6);
+    })
+    it("orUndefined should use internal orUndefined", () => {
+        expect(orUndefined(maybe(5))).toBe(5);
+        expect(orUndefined(nothing())).toBeFalsy();
+    })
+})

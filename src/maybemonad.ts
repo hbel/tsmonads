@@ -205,3 +205,8 @@ export class Nothing implements Maybe<any> {
         return anyEquals(this, that);
     }
 }
+
+export const match = <T,U>(mb: Maybe<T>, just: (x: T) => U, nothing: () => U): U => mb.match(just, nothing);
+export const or = <T,U>(original: Maybe<T>, fallback: Maybe<U>) => original.or(fallback);
+export const orElse = <T>(original: Maybe<T>, fallback: T) => original.orElse(fallback);
+export const orUndefined = <T>(original: Maybe<T>) => original.orUndefined();
