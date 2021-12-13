@@ -16,6 +16,15 @@ export function call<T>(f: () => T): Try<T> {
 }
 
 /**
+ * Waraps the give promise into a Try monad
+ * @param p Promise
+ * @returns Promise of a Try monad
+ */
+export function wrapPromise<T>(p: () => Promise<T>): Promise<Try<T>> {
+	return p().then(s => new Success(s)).catch(e => new Failure(e));
+}
+
+/**
  *  Try monad
  */
 export abstract class Try<T> implements Monad<T> {

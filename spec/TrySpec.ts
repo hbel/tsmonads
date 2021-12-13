@@ -1,3 +1,4 @@
+import { wrapPromise } from "../src/trymonad";
 import { call, flatten, Try } from "./../monads";
 
 describe("The call function", () => {
@@ -24,6 +25,19 @@ describe("The call function", () => {
         const t = call<number>(() => { throw new TypeError("Foo"); });
         expect(() => t.result).toThrow(new Error("Try resulted in an error!"));
     });
+});
+
+describe("wraps a promise", () => {
+	it("Produces a succes", async () => {
+		const m = await wrapPromise(() => Promise.resolve(1));
+		expect(m.succeeded).toBeTruthy;
+		expect(m.result).toBe(1);
+	});
+	it("Produces a Failure", async () => {
+		const m = await wrapPromise(() => Promise.reject(new Error("error")));
+		expect(m.succeeded).toBeFalsy;
+		expect(m.error.message).toBe("error");
+	});
 });
 
 describe("A try of a try", () => {
