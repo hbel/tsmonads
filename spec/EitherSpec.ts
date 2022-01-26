@@ -46,9 +46,9 @@ describe("Either.equal", () => {
 
 describe("Either.reduce", () => {
     it("should return a value in", () => {
-        const u = right<string, any>({ test: "test" }).reduce((_, v) => v.test, "");
+        const u = right<string, any>({ test: "test" }).reduce((_, w) => w.test, "");
         expect(u).toBe("test");
-        const v = left<string, any>("error").reduce((_, v) => v.test, "dummy");
+        const v = left<string, any>("error").reduce((_, w) => w.test, "dummy");
         expect(v).toBe("dummy");
     });
 });
@@ -63,6 +63,18 @@ describe("Converting either monad to maybe monad", () => {
         const t = left(0);
         expect(t.toMaybe().hasValue).toBe(false);
         expect(t.toMaybe().orElse(0)).toBe(0);
+    });
+});
+
+
+describe("Converting either monad to promise", () => {
+    it("should convert a Right into a resolve", async () => {
+        const t = await right(5).toPromise();
+    	expect(t).toBe(5);
+    });
+    it("should convert a Left into a reject", (done) => {
+        const t = left(0).toPromise();
+		t.catch(() => done());
     });
 });
 

@@ -1,3 +1,4 @@
+import { Either, left, right } from "./eithermonad";
 import { anyEquals, chain, flatten, Monad } from "./helpers";
 
 export const nothing = () => new Nothing();
@@ -99,6 +100,13 @@ export abstract class Maybe<T> implements Monad<T> {
      * Check whether two maybes are equal
      */
     public abstract equals<U>(that: Maybe<U>): boolean;
+
+	public abstract toEither(error?: string): Either<string, T>;
+
+	/**
+     * Convert to promise
+     */
+	public abstract toPromise(error?: string): Promise<T>;
 }
 
 /**
@@ -154,6 +162,13 @@ export class Just<T> implements Maybe<T> {
     public equals<U>(that: Maybe<U>): boolean {
         return anyEquals(this, that);
     }
+
+	public toEither(): Either<string, T> { return right(this._value); }
+
+	/**
+     * Convert to promise
+     */
+	public toPromise(error?: string): Promise<T> { return Promise.resolve(this._value) }
 }
 
 /**
@@ -198,15 +213,21 @@ export class Nothing implements Maybe<any> {
 
     public match<U>(_: (x: any) => U, f: () => U): U { return f(); }
 
-    // tslint:disable-next-line:no-empty
-    public forEach(f: (x: any) => void): void { }
+    public forEach(f: (x: any) => void): void { return; }
 
     public equals<U>(that: Maybe<U>): boolean {
         return anyEquals(this, that);
     }
+
+	public toEither(error?: string): Either<string, any> { return left(error ?? "nothing") }
+
+	/**
+     * Convert to promise
+     */
+	public toPromise(error?: string): Promise<any> { return Promise.reject(new Error(error ?? "nothing")); }
 }
 
-export const match = <T,U>(mb: Maybe<T>, just: (x: T) => U, nothing: () => U): U => mb.match(just, nothing);
+export const match = <T,U>(mb: Maybe<T>, justFunction: (x: T) => U, nothingFunction: () => U): U => mb.match(justFunction, nothingFunction);
 export const or = <T,U>(original: Maybe<T>, fallback: Maybe<U>) => original.or(fallback);
 export const orElse = <T>(original: Maybe<T>, fallback: T) => original.orElse(fallback);
 export const orUndefined = <T>(original: Maybe<T>) => original.orUndefined();

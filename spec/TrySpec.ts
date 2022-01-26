@@ -96,6 +96,17 @@ describe("Converting try monad to maybe monad", () => {
     });
 });
 
+describe("Converting try  monad to promise", () => {
+    it("should convert a success into a resolve", async () => {
+        const t = await call(() => 2 + 3).toPromise();
+    	expect(t).toBe(5);
+    });
+    it("should convert a failure into a reject", (done) => {
+        const t = call(() => {throw new Error("");}).toPromise();
+        t.catch(() => done());
+    });
+});
+
 describe("Flatmap of Try monads", () => {
     it("should allow to queue several function calls, even when changing return types", () => {
         const t = call(() => 2 + 3);

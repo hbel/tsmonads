@@ -122,6 +122,11 @@ export class Either<L, R> implements Monad<R> {
      */
     public toMaybe = (): Maybe<R> => this.isRight ? new Just(this._right!) : new Nothing();
 
+	/**
+     * Convert to promise
+     */
+	public toPromise = (): Promise<R> => this.isRight ? Promise.resolve(this._right!) : Promise.reject(this._left);
+
     /**
      * Check whether two Either instances are equal
      */

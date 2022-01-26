@@ -110,6 +110,28 @@ describe("Maybe.equal", () => {
     });
 });
 
+describe("Converting maybe monad to promise", () => {
+    it("should convert a some into a resolve", async () => {
+        const t = await maybe(5).toPromise();
+    	expect(t).toBe(5);
+    });
+    it("should convert a nothing into a reject", (done) => {
+        const t = nothing().toPromise();
+		t.catch(() => done());
+    });
+});
+
+describe("Converting maybe monad to an either", () => {
+    it("should convert a some into a right", () => {
+        const t = maybe(5).toEither();
+    	expect(t.right).toBe(5);
+    });
+    it("should convert a nothing into a left", () => {
+        const t = nothing().toEither();
+		expect(t.isLeft).toBeTruthy();
+    });
+});
+
 describe("A Maybe", () => {
     it("should throw an exception on lifting a nothing", () => {
         const m = maybe(null);
@@ -118,7 +140,6 @@ describe("A Maybe", () => {
     it("should also work when encapsulating a boolean", () => {
         const m = maybe(true);
         expect(m.hasValue).toBe(true);
-        const n = maybe(false);
         expect(m.hasValue).toBe(true);
         expect(m.nothing).toBe(false);
     });
@@ -172,7 +193,7 @@ describe("A Maybe", () => {
 
 describe("maybe functions, ", () => {
     it("match should use internal match", () => {
-        const val = (val: number) => val;
+        const val = (v: number) => v;
         const none = () => 0;
         expect(match(maybe(5), val, none)).toBe(maybe(5).match(val, none));
         expect(match(nothing(), val, none)).toBe(nothing().match(val, none));

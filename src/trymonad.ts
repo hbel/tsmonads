@@ -111,6 +111,11 @@ export abstract class Try<T> implements Monad<T> {
      * @param that
      */
     public abstract equals<U>(that: Try<U>): boolean;
+
+	/**
+     * Convert to promise
+     */
+	public abstract toPromise(): Promise<T>;
 }
 
 export class Success<T> implements Try<T> {
@@ -153,6 +158,8 @@ export class Success<T> implements Try<T> {
     public equals<U>(that: Try<U>): boolean {
         return anyEquals(this, that);
     }
+
+	public toPromise(): Promise<T> { return Promise.resolve(this._value) }
 }
 
 export class Failure implements Try<any> {
@@ -183,7 +190,7 @@ export class Failure implements Try<any> {
     }
 
     // tslint:disable-next-line:no-empty
-    public forEach(f: (x: any) => void): void { }
+    public forEach(f: (x: any) => void): void { return; }
 
     public unsafeLift<T>(): T {
         throw new Error("Is a failure");
@@ -198,4 +205,6 @@ export class Failure implements Try<any> {
     public equals<U>(that: Try<U>): boolean {
         return anyEquals(this, that);
     }
+
+	public toPromise(): Promise<any> { return Promise.reject(this._error); }
 }

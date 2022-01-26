@@ -1,6 +1,4 @@
-import { Either } from "./eithermonad";
-import { Maybe, nothing } from "./maybemonad";
-import { Try } from "./trymonad";
+import { nothing } from "./maybemonad";
 
 /**
  * Base interface for monads. Defines a unit operation and a flatMap operation,
@@ -15,6 +13,7 @@ export interface Monad<T> {
     unsafeLift(): T;
     reduce<V>(f: (total: V, current: T) => V, start: V): V;
     equals<U>(that: Monad<U>): boolean;
+	toPromise(error?: string): Promise<T>;
 }
 
 export function anyEquals(x: any, y: any): boolean {
@@ -49,8 +48,7 @@ export function flatten<T, U extends Monad<T>>(l: U[]): Monad<T[]> {
         return l_[0].flatMap((x) => rec(l_.slice(1), r.concat([x])));
     };
     const empty: T[] = [];
-    const ret = rec(l, empty);
-    return ret;
+    return rec(l, empty);
 }
 
 // Remove all "empty" monads from an array of monads and lift the remaining values
@@ -76,6 +74,6 @@ export function flatMap<T, U>(f: (x: T) => Monad<U>, monad: Monad<T>) {
     return monad.flatMap(f);
 }
 
-export function is<T>(f: (x: T) => boolean, monad: Maybe<T>): boolean {
-    return monad.is(f);
+export function is<T>(f: (x: T) => boolean, monad: Monad<T>): boolean {
+    return monad.hasValue && monad.map(f).unsafeLift();
 }
