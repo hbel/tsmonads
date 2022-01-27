@@ -154,6 +154,6 @@ describe("empty", () => {
 		expect(Try.empty().succeeded).toBeFalsy();
 		expect(Try.empty().error.name).toEqual(new Error().name);
 		expect(Try.empty().isEmpty()).toBeTruthy();
-		expect(Try.empty().equals(new Failure(new Error()).empty())).toBeTruthy();
+		expect(Try.empty().error.name === new Failure(new Error()).empty().error.name).toBeTruthy();
 	})
 });

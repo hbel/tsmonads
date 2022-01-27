@@ -20,7 +20,7 @@ export interface Monad<T> {
 export function anyEquals(x: any, y: any): boolean {
     if (x === null || x === undefined || y === null || y === undefined) { return x === y; }
     if (x.constructor !== y.constructor) { return false; }
-    if (x instanceof Function) { return x === y; }
+    if (x instanceof Function && y instanceof Function) { return true; }
     if (x instanceof RegExp) { return x === y; }
     if (x === y || x.valueOf() === y.valueOf()) { return true; }
     if (Array.isArray(x) && x.length !== y.length) { return false; }
