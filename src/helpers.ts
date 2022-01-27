@@ -14,6 +14,7 @@ export interface Monad<T> {
     reduce<V>(f: (total: V, current: T) => V, start: V): V;
     equals<U>(that: Monad<U>): boolean;
 	toPromise(error?: string): Promise<T>;
+	isEmpty(): boolean;
 }
 
 export function anyEquals(x: any, y: any): boolean {

@@ -211,3 +211,11 @@ describe("maybe functions, ", () => {
         expect(orUndefined(nothing())).toBeFalsy();
     })
 })
+
+describe("empty", () => {
+	it("returns nothing", async () => {
+		expect(Maybe.empty().hasValue).toBeFalsy();
+		expect(Maybe.empty().nothing).toBeTruthy();
+		expect(Maybe.empty().isEmpty()).toBeTruthy();
+	})
+});

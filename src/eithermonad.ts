@@ -1,5 +1,5 @@
 import { anyEquals, flatten, Monad } from "./helpers";
-import { Just, Maybe, Nothing } from "./maybemonad";
+import { Just, Maybe, nothing, Nothing } from "./maybemonad";
 
 /**
  * Create an Either with a left (errornous) value
@@ -133,4 +133,8 @@ export class Either<L, R> implements Monad<R> {
     public equals<U, V>(that: Either<U, V>): boolean {
         return anyEquals(this, that);
     }
+
+	public static empty = <T>() => left<Nothing, T>(nothing());
+
+	public isEmpty (){ return this.isLeft; }
 }

@@ -116,6 +116,10 @@ export abstract class Try<T> implements Monad<T> {
      * Convert to promise
      */
 	public abstract toPromise(): Promise<T>;
+
+	public static empty = () => new Failure(new Error());
+
+	public abstract isEmpty(): boolean;
 }
 
 export class Success<T> implements Try<T> {
@@ -160,6 +164,8 @@ export class Success<T> implements Try<T> {
     }
 
 	public toPromise(): Promise<T> { return Promise.resolve(this._value) }
+
+	public isEmpty() { return false; }
 }
 
 export class Failure implements Try<any> {
@@ -207,4 +213,6 @@ export class Failure implements Try<any> {
     }
 
 	public toPromise(): Promise<any> { return Promise.reject(this._error); }
+
+	public isEmpty() { return true; }
 }

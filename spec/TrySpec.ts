@@ -148,3 +148,11 @@ describe("Flatten on an array of try monads", () => {
         expect(tryArray2.succeeded).toBe(false);
     });
 });
+
+describe("empty", () => {
+	it("returns a Failure with an empty error object", async () => {
+		expect(Try.empty().succeeded).toBeFalsy();
+		expect(Try.empty().error.name).toEqual(new Error().name);
+		expect(Try.empty().isEmpty()).toBeTruthy();
+	})
+});

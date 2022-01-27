@@ -107,6 +107,10 @@ export abstract class Maybe<T> implements Monad<T> {
      * Convert to promise
      */
 	public abstract toPromise(error?: string): Promise<T>;
+
+	public static empty = () => nothing();
+
+	public abstract isEmpty(): boolean;
 }
 
 /**
@@ -169,6 +173,8 @@ export class Just<T> implements Maybe<T> {
      * Convert to promise
      */
 	public toPromise(error?: string): Promise<T> { return Promise.resolve(this._value) }
+
+	public isEmpty() { return false; }
 }
 
 /**
@@ -225,6 +231,8 @@ export class Nothing implements Maybe<any> {
      * Convert to promise
      */
 	public toPromise(error?: string): Promise<any> { return Promise.reject(new Error(error ?? "nothing")); }
+
+	public isEmpty() { return true; }
 }
 
 export const match = <T,U>(mb: Maybe<T>, justFunction: (x: T) => U, nothingFunction: () => U): U => mb.match(justFunction, nothingFunction);

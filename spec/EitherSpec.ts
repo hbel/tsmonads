@@ -100,3 +100,11 @@ describe("Flattening an array of Eithers", () => {
         left<number, number>(3)]).isLeft).toBe(true);
     });
 });
+
+describe("empty", () => {
+	it("returns an arbitrary left", async () => {
+		expect(Either.empty().isRight).toBeFalsy();
+		expect(Either.empty().isLeft).toBeTruthy();
+		expect(Either.empty().isEmpty()).toBeTruthy();
+	})
+});
