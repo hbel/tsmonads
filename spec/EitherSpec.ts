@@ -106,5 +106,6 @@ describe("empty", () => {
 		expect(Either.empty().isRight).toBeFalsy();
 		expect(Either.empty().isLeft).toBeTruthy();
 		expect(Either.empty().isEmpty()).toBeTruthy();
+		expect(Either.empty().equals(left(1).empty())).toBeTruthy();
 	})
 });

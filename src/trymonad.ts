@@ -166,6 +166,8 @@ export class Success<T> implements Try<T> {
 	public toPromise(): Promise<T> { return Promise.resolve(this._value) }
 
 	public isEmpty() { return false; }
+
+	public empty = () => Try.empty();
 }
 
 export class Failure implements Try<any> {
@@ -215,4 +217,6 @@ export class Failure implements Try<any> {
 	public toPromise(): Promise<any> { return Promise.reject(this._error); }
 
 	public isEmpty() { return true; }
+
+	public empty = () => Try.empty();
 }

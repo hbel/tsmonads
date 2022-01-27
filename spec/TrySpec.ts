@@ -1,4 +1,4 @@
-import { wrapPromise } from "../src/trymonad";
+import { Failure, wrapPromise } from "../src/trymonad";
 import { call, flatten, Try } from "./../monads";
 
 describe("The call function", () => {
@@ -154,5 +154,6 @@ describe("empty", () => {
 		expect(Try.empty().succeeded).toBeFalsy();
 		expect(Try.empty().error.name).toEqual(new Error().name);
 		expect(Try.empty().isEmpty()).toBeTruthy();
+		expect(Try.empty().equals(new Failure(new Error()).empty())).toBeTruthy();
 	})
 });

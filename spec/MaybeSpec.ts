@@ -217,5 +217,6 @@ describe("empty", () => {
 		expect(Maybe.empty().hasValue).toBeFalsy();
 		expect(Maybe.empty().nothing).toBeTruthy();
 		expect(Maybe.empty().isEmpty()).toBeTruthy();
+		expect(Maybe.empty().equals(maybe(1).empty())).toBeTruthy();
 	})
 });

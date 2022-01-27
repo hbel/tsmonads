@@ -110,6 +110,8 @@ export abstract class Maybe<T> implements Monad<T> {
 
 	public static empty = () => nothing();
 
+	public abstract empty():Maybe<T>;
+
 	public abstract isEmpty(): boolean;
 }
 
@@ -174,6 +176,8 @@ export class Just<T> implements Maybe<T> {
      */
 	public toPromise(error?: string): Promise<T> { return Promise.resolve(this._value) }
 
+	public empty = () => Maybe.empty();
+
 	public isEmpty() { return false; }
 }
 
@@ -231,6 +235,8 @@ export class Nothing implements Maybe<any> {
      * Convert to promise
      */
 	public toPromise(error?: string): Promise<any> { return Promise.reject(new Error(error ?? "nothing")); }
+
+	public empty = () => Maybe.empty();
 
 	public isEmpty() { return true; }
 }

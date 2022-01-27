@@ -136,5 +136,7 @@ export class Either<L, R> implements Monad<R> {
 
 	public static empty = <T>() => left<Nothing, T>(nothing());
 
+	public empty = <T>() => Either.empty();
+
 	public isEmpty (){ return this.isLeft; }
 }
