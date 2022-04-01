@@ -8,10 +8,10 @@ import { Maybe, maybe, Nothing } from "./maybemonad";
 export function call<T>(f: () => T): Try<T> {
     try {
         const result = f();
-        return new Success(result);
+        return Try.fromValue(result);
     }
     catch (ex) {
-        return new Failure(ex);
+        return Try.fromError(ex);
     }
 }
 
@@ -42,6 +42,14 @@ export abstract class Try<T> implements Monad<T> {
     public static flatten<T>(coll: Array<Try<T>>): Try<T[]> {
         return flatten(coll) as Try<T[]>;
     }
+
+	public static fromError<T>(error: Error): Try<T> {
+		return new Failure(error);
+	}
+
+	public static fromValue<T>(value: T): Try<T> {
+		return new Success(value);
+	}
 
     // Whether the call has succceeded without an exception
     public succeeded: boolean;
