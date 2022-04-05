@@ -107,6 +107,18 @@ describe("Converting try  monad to promise", () => {
     });
 });
 
+describe("Flattening an array of Tries", () => {
+	it("should correctly flatten to success in", async () => {
+		const arr = [call(() => 2 + 3), call(() => 3 + 4)];
+		expect(Try.flatten(arr).result).toEqual([5, 7])
+	});
+	it("should correctly flatten to failed in", async () => {
+		const arr = [call(() => 2 + 3), call(() => { throw new Error("Foo"); })];
+		expect(Try.flatten(arr).succeeded).toBeFalsy();
+		expect(Try.flatten(arr).error.message).toBe("Foo");
+	})
+})
+
 describe("Flatmap of Try monads", () => {
     it("should allow to queue several function calls, even when changing return types", () => {
         const t = call(() => 2 + 3);
