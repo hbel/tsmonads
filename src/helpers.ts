@@ -34,12 +34,12 @@ export function anyEquals(x: any, y: any): boolean {
 
 // The flatten functions allows you to turn an array of monads of T into
 // an monad of array of T.
-export function flatten<T, U extends Monad<T>>(l: U[]): Monad<T[]> {
+export function flatten<T, U extends Monad<T>>(l: U[], emptyFunc?: () => Monad<T[]>): Monad<T[]> {
     if (!l) {
         throw new Error("Array is empty or non-existent");
     }
     if (l.length === 0) {
-        return nothing();
+        return emptyFunc ? emptyFunc() : nothing();
     }
     const unit = l[0].unit;
     const rec = (l_: U[], r: T[]): any => {

@@ -3,7 +3,7 @@ import { Maybe, maybe, Nothing } from "./maybemonad";
 
 /**
  * Tries to call the given function. Returns a Success if
- * no exception occured, otherwise returns a Failure containing the error
+ * no exception occurred, otherwise returns a Failure containing the error
  */
 export function call<T>(f: () => T): Try<T> {
     try {
@@ -16,7 +16,7 @@ export function call<T>(f: () => T): Try<T> {
 }
 
 /**
- * Waraps the give promise into a Try monad
+ * Wraps the given promise into a Try monad
  * @param p Promise
  * @returns Promise of a Try monad
  */
@@ -40,7 +40,7 @@ export abstract class Try<T> implements Monad<T> {
      * Turn an array of monads of T into a monad of array of T.
      */
     public static flatten<T>(coll: Array<Try<T>>): Try<T[]> {
-        return flatten(coll) as Try<T[]>;
+        return flatten(coll, Try.empty) as Try<T[]>;
     }
 
 	public static fromError<T>(error: Error): Try<T> {
@@ -51,18 +51,18 @@ export abstract class Try<T> implements Monad<T> {
 		return new Success(value);
 	}
 
-    // Whether the call has succceeded without an exception
+    // Whether the call has succeeded without an exception
     public succeeded: boolean;
 
     /**
-     * The calls result (if no exception occured). Calling this
-     * will throw a runtime error if an exception occured.
+     * The calls result (if no exception occurred). Calling this
+     * will throw a runtime error if an exception occurred.
      */
     public result: T;
 
     /**
-     * The error (if an exception occured). Calling this
-     * will throw a runtime error if no exception occured.
+     * The error (if an exception occurred). Calling this
+     * will throw a runtime error if no exception occurred.
      */
     public error: Error;
 
@@ -143,7 +143,7 @@ export class Success<T> implements Try<T> {
 
     public get result(): T { return this._value; }
 
-    public get error(): Error { throw new Error("No error occured"); }
+    public get error(): Error { throw new Error("No error occurred"); }
 
     public map<U>(f: (x: T) => U): Try<U> {
         return call<U>(() => f(this._value));
@@ -181,7 +181,7 @@ export class Success<T> implements Try<T> {
 export class Failure implements Try<any> {
     constructor(private readonly _error: Error) { }
 
-    public onSuccess(f: (x: any) => void): Try<any> { return this; }
+    public onSuccess(_f: (x: any) => void): Try<any> { return this; }
 
     public onFailure(f: (error: Error) => void): Try<any> { f(this._error); return this; }
 
@@ -193,11 +193,11 @@ export class Failure implements Try<any> {
 
     public get error(): Error { return this._error; }
 
-    public map<T, U>(f: (x: T) => U): Try<U> {
+    public map<T, U>(_f: (x: T) => U): Try<U> {
         return this;
     }
 
-    public flatMap<T, U>(f: (x: T) => Try<U>): Try<U> {
+    public flatMap<T, U>(_f: (x: T) => Try<U>): Try<U> {
         return this;
     }
 
@@ -206,7 +206,7 @@ export class Failure implements Try<any> {
     }
 
     // tslint:disable-next-line:no-empty
-    public forEach(f: (x: any) => void): void { return; }
+    public forEach(_f: (x: any) => void): void { return; }
 
     public unsafeLift<T>(): T {
         throw new Error("Is a failure");

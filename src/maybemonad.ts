@@ -28,7 +28,7 @@ export abstract class Maybe<T> implements Monad<T> {
      * Turn an array of monads of T into a monad of array of T.
      */
     public static flatten<T>(coll: Array<Maybe<T>>): Maybe<T[]> {
-        return flatten(coll) as Maybe<T[]>;
+        return flatten(coll, Maybe.empty) as Maybe<T[]>;
     }
 
     /**
@@ -78,7 +78,7 @@ export abstract class Maybe<T> implements Monad<T> {
     public abstract unsafeLift(): T;
 
     /**
-     * Match the monad by executing a specific funtions if it holds a value,
+     * Match the monad by executing a specific functions if it holds a value,
      * and another function if not
      */
     public abstract match<U>(just: (x: T) => U, nothing: () => U): U;
@@ -174,7 +174,7 @@ export class Just<T> implements Maybe<T> {
 	/**
      * Convert to promise
      */
-	public toPromise(error?: string): Promise<T> { return Promise.resolve(this._value) }
+	public toPromise(_error?: string): Promise<T> { return Promise.resolve(this._value) }
 
 	public empty = () => Maybe.empty();
 
@@ -191,13 +191,13 @@ export class Nothing implements Maybe<any> {
 
     public unit = maybe;
 
-    public reduce<V>(f: (total: V, current: any) => V, start: V) { return start; }
+    public reduce<V>(_f: (total: V, current: any) => V, start: V) { return start; }
 
-    public map<T, U>(f: (x: T) => U): Maybe<U> {
+    public map<T, U>(_f: (x: T) => U): Maybe<U> {
         return nothing();
     }
 
-    public flatMap<T, U>(f: (x: T) => Maybe<U>): Maybe<U> {
+    public flatMap<T, U>(_f: (x: T) => Maybe<U>): Maybe<U> {
         return nothing();
     }
 
@@ -213,7 +213,7 @@ export class Nothing implements Maybe<any> {
         return undefined;
     }
 
-    public is(f: (x: any) => boolean): boolean {
+    public is(_f: (x: any) => boolean): boolean {
         return false;
     }
 
@@ -223,7 +223,7 @@ export class Nothing implements Maybe<any> {
 
     public match<U>(_: (x: any) => U, f: () => U): U { return f(); }
 
-    public forEach(f: (x: any) => void): void { return; }
+    public forEach(_f: (x: any) => void): void { return; }
 
     public equals<U>(that: Maybe<U>): boolean {
         return anyEquals(this, that);

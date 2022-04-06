@@ -9,9 +9,9 @@ describe("The call function", () => {
         t.onSuccess((x) => { expect(x).toBe(5); });
         t.onFailure((err) => { throw new Error(); }); // This should not be called
     });
-    it("should throw an error when accessing the error function on a succesful call", () => {
+    it("should throw an error when accessing the error function on a successful call", () => {
         const t = call(() => 2 + 3);
-        expect(() => t.error).toThrow(new Error("No error occured"));
+        expect(() => t.error).toThrow(new Error("No error occurred"));
     });
     it("should return Failure(TypeError) for a value of f=throw new TypeError", () => {
         const t = call<number>(() => { throw new TypeError("Foo"); });

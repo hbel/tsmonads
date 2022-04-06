@@ -2,7 +2,7 @@ import { anyEquals, flatten, Monad } from "./helpers";
 import { Just, Maybe, nothing, Nothing } from "./maybemonad";
 
 /**
- * Create an Either with a left (errornous) value
+ * Create an Either with a left (erroneous) value
  */
 export function left<L, R>(value: L) {
     if (value === null || value === undefined) {
@@ -62,7 +62,7 @@ export class Either<L, R> implements Monad<R> {
      * Turn an array of monads of T into a monad of array of T.
      */
     public static flatten<L, R>(coll: Array<Either<L, R>>): Either<L[], R[]> {
-        return flatten(coll) as Either<L[], R[]>;
+        return flatten(coll, Either.empty) as Either<L[], R[]>;
     }
     private readonly _left?: L;
     private readonly _right?: R;

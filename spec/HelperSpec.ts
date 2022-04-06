@@ -1,5 +1,5 @@
-import { flatMap, is, map } from "../src/helpers";
-import {call, clean, maybe, Maybe, right} from "./../monads";
+import { flatMap, flatten, is, map } from "../src/helpers";
+import {call, clean, Either, maybe, Maybe, right, Try} from "./../monads";
 
 describe ("A maybe factory", () => {
     it("should return Just(5) for a value of 5", () => {
@@ -11,6 +11,20 @@ describe ("A maybe factory", () => {
         expect(cleaned[1]).toBe(2);
     });
 });
+
+
+describe("Flatten", () => {
+	it("should return nothing for an empty array encapsuled in an arbitrary monad", () => {
+		const a: any[] = [];
+		expect((flatten<any, Maybe<any>>(a) as Maybe<any>).nothing).not.toBeUndefined;
+	})
+	it("if empty is given, return the correct empty monad for empty arrays", () => {
+		const a: any[] = [];
+		expect((flatten(a, Try.empty) as Try<any>).succeeded).not.toBeUndefined;
+		expect((flatten(a, Maybe.empty) as Maybe<any>).nothing).not.toBeUndefined;
+		expect((flatten(a, Either.empty) as Either<any, any>).left).not.toBeUndefined;
+	})
+})
 
 describe("Functional monads", () => {
     it("Should be able to use functional map", () => {
