@@ -1,6 +1,6 @@
 {
   "name": "tsmonads",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "Scala-styled monads in TypeScript",
   "main": "lib/monads.js",
   "types": "lib/monads.d.ts",
@@ -24,10 +24,13 @@
     "glob": "^7.1.1",
     "handlebars": "^4.5.3",
     "jasmine": "^2.5.3",
-    "nodemon": "^2.0.15",
+    "nodemon": "^2.0.18",
     "nyc": "^15.1.0",
     "tslint": "^5.12.0",
     "typescript": "^4.5.3"
+  },
+  "resolutions": {
+	"got": "^11.8.5"
   },
   "dependencies": {}
 }
