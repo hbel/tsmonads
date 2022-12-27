@@ -43,7 +43,7 @@ export abstract class Try<T> implements Monad<T> {
         return flatten(coll, Try.empty) as Try<T[]>;
     }
 
-	public static fromError<T>(error: Error): Try<T> {
+	public static fromError<T, E extends Error>(error: E): Try<T> {
 		return new Failure(error);
 	}
 
