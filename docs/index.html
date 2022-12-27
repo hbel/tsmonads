@@ -1,0 +1,126 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>tsmonads</title><meta name="description" content="Documentation for tsmonads"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base=".">
+<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<div class="field">
+<div id="tsd-toolbar-links"></div></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">tsmonads</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
+<div class="container container-main">
+<div class="col-8 col-content">
+<div class="tsd-page-title">
+<h2>tsmonads</h2></div>
+<div class="tsd-panel tsd-typography">
+<a href="#tsmonads" id="tsmonads" style="color: inherit; text-decoration: none;">
+  <h1>tsmonads</h1>
+</a>
+<p><a href="https://travis-ci.org/hbel/tsmonads"><img src="https://travis-ci.org/hbel/tsmonads.svg?branch=master" alt="Build Status"></a>
+<a href="https://david-dm.org/hbel/tsmonads.svg"><img src="https://david-dm.org/hbel/tsmonads.svg" alt="Dependencies"></a>
+<a href="https://codecov.io/gh/hbel/tsmonads"><img src="https://codecov.io/gh/hbel/tsmonads/branch/master/graph/badge.svg" alt="codecov"></a></p>
+
+<a href="#monads-in-typescript" id="monads-in-typescript" style="color: inherit; text-decoration: none;">
+  <h3>Monads in TypeScript</h3>
+</a>
+<p><em>tsmonads</em> provides some basic, strictly typed monadic data types for use with TypeScript, namely MayBe, Try and Either monads. It&#39;s API is heavily inspired by the according types in the Scala lanaguge API. It has <strong>no</strong> dependencies and can even be used (although without most of it&#39;s benefits) in JavaScript.</p>
+
+<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+  <h1>Install</h1>
+</a>
+<p>NPM: <code>npm install tsmonads</code></p>
+<p>Yarn: <code>yarn add tsmonads</code></p>
+
+<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+  <h1>Usage</h1>
+</a>
+<p>Simply <code>import</code> the needed functions and classes from <code>&quot;tsmonad</code>.</p>
+
+<a href="#maybe" id="maybe" style="color: inherit; text-decoration: none;">
+  <h2>Maybe</h2>
+</a>
+<p>A Maybe either contains <em>just</em> a value or <em>nothing</em>. You can easily create new Maybe instances using the <em>maybe</em> factory function:</p>
+<pre><code><span class="hl-0">import</span><span class="hl-1"> {</span><span class="hl-2">maybe</span><span class="hl-1">} </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;tsmonads&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">five</span><span class="hl-1"> = </span><span class="hl-6">maybe</span><span class="hl-1">(</span><span class="hl-7">5</span><span class="hl-1">); </span><span class="hl-8">// Type of Maybe is infereed to be &quot;number&quot;</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">n</span><span class="hl-1">?: </span><span class="hl-9">number</span><span class="hl-1">;</span><br/><span class="hl-1">[...]</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">maybeANumber</span><span class="hl-1"> = </span><span class="hl-6">maybe</span><span class="hl-1">(</span><span class="hl-2">n</span><span class="hl-1">); </span><span class="hl-8">// maybeANumber will be a Maybe&lt;number&gt;. Wether it contains a value depends on n being a number or undefined.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">nothingAtAll</span><span class="hl-1"> = </span><span class="hl-6">maybe</span><span class="hl-1">&lt;</span><span class="hl-9">number</span><span class="hl-1">&gt;(</span><span class="hl-4">null</span><span class="hl-1">); </span><span class="hl-8">// nothingAtAll is Nothing. The generic type has to given explicitly because it cannot be inferred from the argument.</span>
+</code></pre>
+<p>You can use <em>map()</em> and <em>forEach()</em> to transform the Maybe into another contained type or to perform side-effects on it&#39;s value. If the maybe is nothing, this is
+a no-op.</p>
+<pre><code><span class="hl-0">import</span><span class="hl-1"> {</span><span class="hl-2">maybe</span><span class="hl-1">} </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;tsmonads&quot;</span><span class="hl-1">;</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">m</span><span class="hl-1"> = </span><span class="hl-6">maybe</span><span class="hl-1">(</span><span class="hl-7">5</span><span class="hl-1">);</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">seven</span><span class="hl-1"> = </span><span class="hl-2">m</span><span class="hl-1">.</span><span class="hl-6">map</span><span class="hl-1">(</span><span class="hl-2">x</span><span class="hl-1"> </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-2">x</span><span class="hl-1"> + </span><span class="hl-7">2</span><span class="hl-1">);</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">show</span><span class="hl-1"> = </span><span class="hl-2">m</span><span class="hl-1">.</span><span class="hl-6">forEach</span><span class="hl-1">(</span><span class="hl-2">x</span><span class="hl-1"> </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-2">x</span><span class="hl-1">));</span>
+</code></pre>
+<p>You can extract the value from a maybe safely by supplying a default to its <em>orElse()</em>-function. If you need more control, you can use <em>match()</em> and suppy functions to handle the value and nothing case explicitly:</p>
+<pre><code><span class="hl-0">import</span><span class="hl-1"> {</span><span class="hl-2">maybe</span><span class="hl-1">} </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;tsmonads&quot;</span><span class="hl-1">;</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">m</span><span class="hl-1">: </span><span class="hl-9">Maybe</span><span class="hl-1">&lt;</span><span class="hl-9">number</span><span class="hl-1">&gt;;</span><br/><span class="hl-1">[...]</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">extractedValueOrZero</span><span class="hl-1"> = </span><span class="hl-2">m</span><span class="hl-1">.</span><span class="hl-6">orElse</span><span class="hl-1">(</span><span class="hl-7">0</span><span class="hl-1">);</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">doSomethingWithTheValue</span><span class="hl-1"> = </span><span class="hl-2">m</span><span class="hl-1">.</span><span class="hl-6">match</span><span class="hl-1">(</span><span class="hl-2">x</span><span class="hl-1"> </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-7">2</span><span class="hl-1">*</span><span class="hl-2">x</span><span class="hl-1">, () </span><span class="hl-4">=&gt;</span><span class="hl-1"> -</span><span class="hl-7">1</span><span class="hl-1">);</span>
+</code></pre>
+
+<a href="#try" id="try" style="color: inherit; text-decoration: none;">
+  <h2>Try</h2>
+</a>
+<p>Use <em>Try</em> to safely encapsulate a function call that may throw an exception. Try will either be a <em>Success</em> wrapping the return value of the function or a <em>Failure</em>. Use try via the <em>call</em> factory function.</p>
+<pre><code><span class="hl-0">import</span><span class="hl-1"> {</span><span class="hl-2">call</span><span class="hl-1">} </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;tsmonads&quot;</span><span class="hl-1">;</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">retVal</span><span class="hl-1"> = </span><span class="hl-6">call</span><span class="hl-1">(() </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-7">2</span><span class="hl-1">+</span><span class="hl-7">5</span><span class="hl-1">); </span><span class="hl-8">// retVal is Success&lt;number&gt;(7)</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">fail</span><span class="hl-1"> = </span><span class="hl-6">call</span><span class="hl-1">(() </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-2">throw</span><span class="hl-1"> </span><span class="hl-3">&quot;Error&quot;</span><span class="hl-1">); </span><span class="hl-8">// retVal is Failure(&quot;Error&quot;);</span>
+</code></pre>
+<p>Like a Maybe, you can use map() and forEach() on a Try. For more control, supply functions to its <em>onSuccess()</em> and <em>onFailure()</em> handlers:</p>
+<pre><code><span class="hl-0">import</span><span class="hl-1"> {</span><span class="hl-2">call</span><span class="hl-1">} </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;tsmonads&quot;</span><span class="hl-1">;</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">retVal</span><span class="hl-1"> = </span><span class="hl-6">call</span><span class="hl-1">(() </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-7">2</span><span class="hl-1">+</span><span class="hl-7">5</span><span class="hl-1">); </span><br/><span class="hl-2">retVal</span><span class="hl-1">.</span><span class="hl-6">onSuccess</span><span class="hl-1">(</span><span class="hl-2">s</span><span class="hl-1"> </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-2">s</span><span class="hl-1">)).</span><span class="hl-6">onFailure</span><span class="hl-1">(</span><span class="hl-2">e</span><span class="hl-1"> </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-3">&quot;An error occured&quot;</span><span class="hl-1">));</span>
+</code></pre>
+<p>If the Error encapsulated by the Failure doesn&#39;t matter to you, you can also convert the Try into a Maybe using its <em>toMaybe()</em> method.</p>
+
+<a href="#either" id="either" style="color: inherit; text-decoration: none;">
+  <h2>Either</h2>
+</a>
+<p>An Either holds either a left or a right value. Usually, the left value denotes an error an the right value represents a successful result. Construct
+it using the <em>left()</em> and <em>right()</em> factory functions.</p>
+
+<a href="#further-utility-functions" id="further-utility-functions" style="color: inherit; text-decoration: none;">
+  <h2>Further utility functions</h2>
+</a>
+<p>Besides the above functions, we also provide some utilities you can use when working with arrays of Monads. The <code>clean()</code> function will extract all values 
+from the monads, throw away any non-values (Nothing, Failure, Left) and return an array of the extracted values. The <code>flatten()</code> function will turn an <code>Array&lt;Monad&lt;T&gt;&gt;</code> into a <code>Monad&lt;Array&lt;T&gt;&gt;</code>. Note that you will receive a &quot;negatively typed&quot; array if even single value in the original array is Nothing/Failure/Left. Otherwise, you&#39;ll get a <code>Just&lt;Array&lt;T&gt;&gt;</code>, <code>Success&lt;Array&lt;T&gt;&gt;</code> or <code>Right&lt;Array&lt;T&gt;&gt;</code>. All monad types provide a typed wrapper 
+of flatten as a static method so you don&#39;t need to type-cast any results of the flatten method.</p>
+</div></div>
+<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility">
+<h4 class="uppercase">Member Visibility</h4><form>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div>
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<nav class="tsd-navigation primary">
+<details class="tsd-index-accordion" open><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Modules</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li class="current selected"><a href="modules.html">tsmonads</a>
+<ul></ul></li></ul></div></details></nav>
+<nav class="tsd-navigation secondary menu-sticky">
+<ul>
+<li class="tsd-kind-class"><a href="classes/Either.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-128-path"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)" id="icon-128-text"></path></svg>Either</a></li>
+<li class="tsd-kind-class"><a href="classes/Failure.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Failure</a></li>
+<li class="tsd-kind-class"><a href="classes/Just.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Just</a></li>
+<li class="tsd-kind-class"><a href="classes/Maybe.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Maybe</a></li>
+<li class="tsd-kind-class"><a href="classes/Nothing.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Nothing</a></li>
+<li class="tsd-kind-class"><a href="classes/Success.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Success</a></li>
+<li class="tsd-kind-class"><a href="classes/Try.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Try</a></li>
+<li class="tsd-kind-interface"><a href="interfaces/Monad.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-interface)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-256-path"></rect><path d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z" fill="var(--color-text)" id="icon-256-text"></path></svg>Monad</a></li>
+<li class="tsd-kind-function"><a href="functions/call.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-function)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-64-path"></rect><path d="M9.39 16V7.24H14.55V8.224H10.446V11.128H14.238V12.112H10.47V16H9.39Z" fill="var(--color-text)" id="icon-64-text"></path></svg>call</a></li>
+<li class="tsd-kind-function"><a href="functions/clean.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>clean</a></li>
+<li class="tsd-kind-function"><a href="functions/flatMap.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>flat<wbr/>Map</a></li>
+<li class="tsd-kind-function"><a href="functions/flatten.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>flatten</a></li>
+<li class="tsd-kind-function"><a href="functions/forEach.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>for<wbr/>Each</a></li>
+<li class="tsd-kind-function"><a href="functions/is.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>is</a></li>
+<li class="tsd-kind-function"><a href="functions/left.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>left</a></li>
+<li class="tsd-kind-function"><a href="functions/map.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>map</a></li>
+<li class="tsd-kind-function"><a href="functions/match.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>match</a></li>
+<li class="tsd-kind-function"><a href="functions/maybe-1.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>maybe</a></li>
+<li class="tsd-kind-function"><a href="functions/nothing-1.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>nothing</a></li>
+<li class="tsd-kind-function"><a href="functions/or.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>or</a></li>
+<li class="tsd-kind-function"><a href="functions/orElse.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>or<wbr/>Else</a></li>
+<li class="tsd-kind-function"><a href="functions/orUndefined.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>or<wbr/>Undefined</a></li>
+<li class="tsd-kind-function"><a href="functions/right.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>right</a></li>
+<li class="tsd-kind-function"><a href="functions/wrapPromise.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>wrap<wbr/>Promise</a></li></ul></nav></div></div>
+<div class="container tsd-generator">
+<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
+<div class="overlay"></div><script src="assets/main.js"></script></body></html>
