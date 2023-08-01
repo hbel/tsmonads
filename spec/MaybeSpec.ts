@@ -6,7 +6,7 @@ describe("A maybe factory", () => {
         const m = maybe(5);
         expect(m.nothing).toBe(false);
         expect(m.orElse(0)).toBe(5);
-        expect(m.unsafeLift()).toBe(5);
+        expect(m.hasValue && m.value).toBe(5);
     });
     it("should return Nothing for a value of null", () => {
         const m = maybe<number>(null);
@@ -36,7 +36,7 @@ describe("Maybe.reduce", () => {
     it("should return a value in", () => {
         const u = maybe({ test: "test" }).reduce((_, t) => t.test, "");
         expect(u).toBe("test");
-        const v = nothing().reduce((_, t) => t.test, "dummy");
+        const v = (nothing() as Maybe<any>).reduce((_, t) => t.test, "dummy");
         expect(v).toBe("dummy");
     });
 });
@@ -124,7 +124,7 @@ describe("Converting maybe monad to promise", () => {
 describe("Converting maybe monad to an either", () => {
     it("should convert a some into a right", () => {
         const t = maybe(5).toEither();
-    	expect(t.right).toBe(5);
+    	expect(t.hasValue && t.value).toBe(5);
     });
     it("should convert a nothing into a left", () => {
         const t = nothing().toEither();
@@ -133,10 +133,6 @@ describe("Converting maybe monad to an either", () => {
 });
 
 describe("A Maybe", () => {
-    it("should throw an exception on lifting a nothing", () => {
-        const m = maybe(null);
-        expect(m.unsafeLift).toThrow(new Error("Nothing contains no value"));
-    });
     it("should also work when encapsulating a boolean", () => {
         const m = maybe(true);
         expect(m.hasValue).toBe(true);
@@ -147,7 +143,7 @@ describe("A Maybe", () => {
         const m = maybe(5).map((x) => 2 * x).flatMap((y) => maybe(y / 2));
         expect(m.nothing).toBe(false);
         expect(m.orElse(0)).toBe(5);
-        expect(m.unsafeLift()).toBe(5);
+        expect(m.hasValue && m.value).toBe(5);
     });
     it("should map to new monads correctly for Nothing", () => {
         const m = maybe<number>(null).map((x) => 2 * x).flatMap((y) => maybe(y / 2));
@@ -199,8 +195,10 @@ describe("maybe functions, ", () => {
         expect(match(nothing(), val, none)).toBe(nothing().match(val, none));
     })
     it("or should use internal or", () => {
-        expect(or(maybe(5), maybe(6)).unsafeLift()).toBe(5);
-        expect(or(nothing(), maybe(6)).unsafeLift()).toBe(6);
+		const or1 = or(maybe(5), maybe(6));
+        expect(or1.hasValue && or1.value).toBe(5);
+		const or2 = or(nothing(), maybe(6));
+        expect(or2.hasValue && or2.value).toBe(6);
     })
     it("orElse should use internal orElse", () => {
         expect(orElse(maybe(5), 6)).toBe(5);

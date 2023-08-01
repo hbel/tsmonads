@@ -1,10 +1,10 @@
-import { Either, left, right } from "./eithermonad";
+import { Either, Left, Right, left, right } from "./eithermonad";
 import { anyEquals, chain, flatten, Monad } from "./helpers";
 
 export const nothing = () => new Nothing();
 
 // Factory function for maybes. Depending on the argument will return a Just<T> or Nothing
-export function maybe<T>(val: T | undefined | null): Maybe<T> {
+export function maybe<T>(val: T | undefined | null): Just<T> | Nothing {
     if (val === null || val === undefined) {
         return new Nothing();
     } else {
@@ -20,40 +20,40 @@ export abstract class Maybe<T> implements Monad<T> {
     /**
      * Remove one monadic level from the given Argument
      */
-    public static chain<T, U extends Maybe<Maybe<T>>>(monad: U): Maybe<T> {
-        return chain(monad) as Maybe<T>;
+    public static chain<T, U extends Maybe<Maybe<T>>>(monad: U): Just<T> | Nothing {
+        return chain(monad) as Just<T> | Nothing;
     }
 
     /**
      * Turn an array of monads of T into a monad of array of T.
      */
-    public static flatten<T>(coll: Array<Maybe<T>>): Maybe<T[]> {
-        return flatten(coll, Maybe.empty) as Maybe<T[]>;
+    public static flatten<T>(coll: Array<Maybe<T>>): Just<T[]> | Nothing {
+        return flatten(coll, Maybe.empty) as Just<T[]> | Nothing;
     }
 
     /**
      *  Is this monad "nothing"?
      */
-    public nothing: boolean;
+    public nothing: true | false;
 
     /**
      *  Is this monad not "nothing"?
      */
-    public hasValue: boolean;
+    public hasValue: true | false;
     /**
      * Map the contained value with the given function
      */
-    public abstract map<U>(f: (x: T) => U): Maybe<U>;
+    public abstract map<U>(f: (x: T) => U): Just<U> | Nothing;
 
     /**
      * FlatMap the monad using the given function which in turn will return a monad
      */
-    public abstract flatMap<U>(f: (x: T) => Maybe<U>): Maybe<U>;
+    public abstract flatMap<U>(f: (x: T) => Just<U> | Nothing): Just<U> | Nothing;
 
     /**
      * If the maybe contains nothing, return the Parameter, otherwise return the maybe itself
      */
-    public abstract or<U>(defaultValue: Maybe<U>): Maybe<T> | Maybe<U>;
+    public abstract or<U>(defaultValue: Just<U> | Nothing): Just<T> | Just<U> | Nothing;
 
     /**
      * Safe way to extract the value from the monad. If it contains
@@ -70,12 +70,6 @@ export abstract class Maybe<T> implements Monad<T> {
      * Returns true if the given function returns true for a Just, and false otherwise
      */
     public abstract is(f: (x: T) => boolean): boolean;
-
-    /**
-     *  Lift the monad to get its value. Note that this will cause
-     *  a runtime error if the monad is Nothing!
-     */
-    public abstract unsafeLift(): T;
 
     /**
      * Match the monad by executing a specific functions if it holds a value,
@@ -101,7 +95,7 @@ export abstract class Maybe<T> implements Monad<T> {
      */
     public abstract equals<U>(that: Maybe<U>): boolean;
 
-	public abstract toEither(error?: string): Either<string, T>;
+	public abstract toEither(error?: Error): Left<Error> | Right<T>;
 
 	/**
      * Convert to promise
@@ -110,7 +104,7 @@ export abstract class Maybe<T> implements Monad<T> {
 
 	public static empty = () => nothing();
 
-	public abstract empty():Maybe<T>;
+	public abstract empty(): Just<T> | Nothing;
 
 	public abstract isEmpty(): boolean;
 }
@@ -120,61 +114,57 @@ export abstract class Maybe<T> implements Monad<T> {
  */
 export class Just<T> implements Maybe<T> {
 
-    get nothing(): boolean { return false; }
-    get hasValue(): boolean { return true; }
+    public readonly nothing = false;
+    public readonly hasValue = true;
 
     public unit = maybe;
 
-    constructor(private readonly _value: T) {
-        if (this._value === undefined || this._value === null) {
+    constructor(public readonly value: T) {
+        if (this.value === undefined || this.value === null) {
             throw new Error("Value must be not null and not undefined");
         }
     }
 
-    public reduce<V>(f: (total: V, current: T) => V, _: V) { return f(_, this._value); }
+    public reduce<V>(f: (total: V, current: T) => V, _: V) { return f(_, this.value); }
 
-    public map<U>(f: (x: T) => U): Maybe<U> {
-        return new Just<U>(f(this._value));
+    public map<U>(f: (x: T) => U): Just<U> | Nothing {
+        return new Just<U>(f(this.value));
     }
 
-    public flatMap<U>(f: (x: T) => Maybe<U>): Maybe<U> {
-        return f(this._value);
+    public flatMap<U>(f: (x: T) => Just<U> | Nothing): Just<U> | Nothing {
+        return f(this.value);
     }
 
-    public or<U>(_: Maybe<U>): Maybe<U> | Maybe<T> {
+    public or<U>(_: Just<U> | Nothing): Just<U> | Just<T> | Nothing {
         return this;
     }
 
     public orElse(_: T): T {
-        return this._value;
+        return this.value;
     }
 
     public orUndefined(): T | undefined {
-        return this._value;
+        return this.value;
     }
 
     public is(f: (x: T) => boolean): boolean {
-        return f(this._value);
+        return f(this.value);
     }
 
-    public unsafeLift(): T {
-        return this._value;
-    }
+    public match<U>(just: (x: T) => U, _: () => U): U { return just(this.value); }
 
-    public match<U>(just: (x: T) => U, _: () => U): U { return just(this._value); }
-
-    public forEach(f: (x: T) => void): void { f(this._value); }
+    public forEach(f: (x: T) => void): void { f(this.value); }
 
     public equals<U>(that: Maybe<U>): boolean {
         return anyEquals(this, that);
     }
 
-	public toEither(): Either<string, T> { return right(this._value); }
+	public toEither(): Right<T> { return right(this.value); }
 
 	/**
      * Convert to promise
      */
-	public toPromise(_error?: string): Promise<T> { return Promise.resolve(this._value) }
+	public toPromise(_error?: string): Promise<T> { return Promise.resolve(this.value) }
 
 	public empty = () => Maybe.empty();
 
@@ -184,24 +174,24 @@ export class Just<T> implements Maybe<T> {
 /**
  * Nothing class. If a maybe monad contains no value, it will be of this type.
  */
-export class Nothing implements Maybe<any> {
+export class Nothing implements Maybe<never> {
 
-    get nothing(): boolean { return true; }
-    get hasValue(): boolean { return false; }
+    public readonly nothing = true;
+    public readonly hasValue = false;
 
     public unit = maybe;
 
-    public reduce<V>(_f: (total: V, current: any) => V, start: V) { return start; }
+    public reduce<V>(_f: (total: V, current: never) => V, start: V) { return start; }
 
-    public map<T, U>(_f: (x: T) => U): Maybe<U> {
+    public map<U>(_f: (x: never) => U): Just<U> | Nothing {
         return nothing();
     }
 
-    public flatMap<T, U>(_f: (x: T) => Maybe<U>): Maybe<U> {
+    public flatMap<U>(_f: (x: never) => Just<U> | Nothing): Just<U> | Nothing {
         return nothing();
     }
 
-    public or<U>(that: Maybe<U>): Maybe<U> {
+    public or<U>(that: Just<U> | Nothing): Just<U> | Nothing {
         return that;
     }
 
@@ -213,28 +203,24 @@ export class Nothing implements Maybe<any> {
         return undefined;
     }
 
-    public is(_f: (x: any) => boolean): boolean {
+    public is(_f: (x: never) => boolean): boolean {
         return false;
     }
 
-    public unsafeLift<T>(): T {
-        throw new Error("Nothing contains no value");
-    }
+    public match<U>(_: (x: never) => U, f: () => U): U { return f(); }
 
-    public match<U>(_: (x: any) => U, f: () => U): U { return f(); }
-
-    public forEach(_f: (x: any) => void): void { return; }
+    public forEach(_f: (x: never) => void): void { return; }
 
     public equals<U>(that: Maybe<U>): boolean {
         return anyEquals(this, that);
     }
 
-	public toEither(error?: string): Either<string, any> { return left(error ?? "nothing") }
+	public toEither(error?: Error): Left<Error> { return left(error ?? new Error("nothing")) }
 
 	/**
      * Convert to promise
      */
-	public toPromise(error?: string): Promise<any> { return Promise.reject(new Error(error ?? "nothing")); }
+	public toPromise(error?: string): Promise<never> { return Promise.reject(new Error(error ?? "nothing")); }
 
 	public empty = () => Maybe.empty();
 
@@ -242,6 +228,6 @@ export class Nothing implements Maybe<any> {
 }
 
 export const match = <T,U>(mb: Maybe<T>, justFunction: (x: T) => U, nothingFunction: () => U): U => mb.match(justFunction, nothingFunction);
-export const or = <T,U>(original: Maybe<T>, fallback: Maybe<U>) => original.or(fallback);
+export const or = <T,U>(original: Maybe<T>, fallback: Just<U> | Nothing) => original.or(fallback);
 export const orElse = <T>(original: Maybe<T>, fallback: T) => original.orElse(fallback);
 export const orUndefined = <T>(original: Maybe<T>) => original.orUndefined();

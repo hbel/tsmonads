@@ -4,24 +4,31 @@
 [![Dependencies](https://david-dm.org/hbel/tsmonads.svg)](https://david-dm.org/hbel/tsmonads.svg)
 [![codecov](https://codecov.io/gh/hbel/tsmonads/branch/master/graph/badge.svg)](https://codecov.io/gh/hbel/tsmonads)
 
-
 ### Monads in TypeScript
 
 _tsmonads_ provides some basic, strictly typed monadic data types for use with TypeScript, namely MayBe, Try and Either monads. It's API is heavily inspired by the according types in the Scala lanaguge API. It has **no** dependencies and can even be used (although without most of it's benefits) in JavaScript.
 
 # Install
 
-NPM: ```npm install tsmonads```
+NPM: `npm install tsmonads`
 
-Yarn: ```yarn add tsmonads```
+Yarn: `yarn add tsmonads`
 
 # Usage
 
-Simply ```import``` the needed functions and classes from ```"tsmonad```.
+Simply `import` the needed functions and classes from `"tsmonad`.
+
+# Breaking changes in 3.x
+
+-   We improved statical type analysis in 3.0. This might lead to incompatibilities when using the library without checking the return values correctly.
+-   Global functions (map, flatMap) now return the correct type inferred from the incoming monad's type and the mapping function
+-   `unsafeLift()` was removed from all monads to ensure type safety
+-   Where default types are set for `Either::Left`, `Error` is now used instead of `string`
 
 ## Maybe
 
 A Maybe either contains _just_ a value or _nothing_. You can easily create new Maybe instances using the _maybe_ factory function:
+
 ```
 import {maybe} from "tsmonads";
 
@@ -34,6 +41,7 @@ const nothingAtAll = maybe<number>(null); // nothingAtAll is Nothing. The generi
 
 You can use _map()_ and _forEach()_ to transform the Maybe into another contained type or to perform side-effects on it's value. If the maybe is nothing, this is
 a no-op.
+
 ```
 import {maybe} from "tsmonads";
 const m = maybe(5);
@@ -65,9 +73,10 @@ Like a Maybe, you can use map() and forEach() on a Try. For more control, supply
 
 ```
 import {call} from "tsmonads";
-const retVal = call(() => 2+5); 
+const retVal = call(() => 2+5);
 retVal.onSuccess(s => console.log(s)).onFailure(e => console.log("An error occured"));
 ```
+
 If the Error encapsulated by the Failure doesn't matter to you, you can also convert the Try into a Maybe using its _toMaybe()_ method.
 
 ## Either
@@ -77,6 +86,6 @@ it using the _left()_ and _right()_ factory functions.
 
 ## Further utility functions
 
-Besides the above functions, we also provide some utilities you can use when working with arrays of Monads. The ```clean()``` function will extract all values 
-from the monads, throw away any non-values (Nothing, Failure, Left) and return an array of the extracted values. The ```flatten()``` function will turn an ```Array<Monad<T>>``` into a ```Monad<Array<T>>```. Note that you will receive a "negatively typed" array if even single value in the original array is Nothing/Failure/Left. Otherwise, you'll get a ```Just<Array<T>>```, ```Success<Array<T>>``` or ```Right<Array<T>>```. All monad types provide a typed wrapper 
+Besides the above functions, we also provide some utilities you can use when working with arrays of Monads. The `clean()` function will extract all values
+from the monads, throw away any non-values (Nothing, Failure, Left) and return an array of the extracted values. The `flatten()` function will turn an `Array<Monad<T>>` into a `Monad<Array<T>>`. Note that you will receive a "negatively typed" array if even single value in the original array is Nothing/Failure/Left. Otherwise, you'll get a `Just<Array<T>>`, `Success<Array<T>>` or `Right<Array<T>>`. All monad types provide a typed wrapper
 of flatten as a static method so you don't need to type-cast any results of the flatten method.
