@@ -1,6 +1,6 @@
-import { Either, Left, Right } from "./eithermonad";
-import { Just, Maybe, Nothing, nothing } from "./maybemonad";
-import { Failure, Success, Try } from "./trymonad";
+import { Either, EitherBase, Left, Right } from "./eithermonad";
+import { Just, Maybe, MaybeBase, Nothing, nothing } from "./maybemonad";
+import { Failure, Success, Try, TryBase } from "./trymonad";
 
 /**
  * Base interface for monads. Defines a unit operation and a flatMap operation,
@@ -33,9 +33,9 @@ export function anyEquals(x: any, y: any): boolean {
         p.every((i) => anyEquals(x[i], y[i]));
 }
 
-type InferEither<T, U, V = Nothing> = T extends Either<V, infer X> ? Right<U> | Left<V> : Monad<U>;
-type InferTry<T, U> = T extends Try<infer X> ? Success<U> | Failure : InferEither<T,U>;
-type InferMaybe<T, U> = T extends Maybe<infer X> ? Just<U> | Nothing : InferTry<T,U>;
+type InferEither<T, U, V = Nothing> = T extends EitherBase<V, infer X> ? Right<U> | Left<V> : Monad<U>;
+type InferTry<T, U> = T extends TryBase<infer X> ? Success<U> | Failure : InferEither<T,U>;
+type InferMaybe<T, U> = T extends MaybeBase<infer X> ? Just<U> | Nothing : InferTry<T,U>;
 
 // The flatten functions allows you to turn an array of monads of T into
 // an monad of array of T.

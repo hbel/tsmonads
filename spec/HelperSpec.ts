@@ -1,10 +1,12 @@
-import { Left } from "../src/eithermonad";
 import { flatMap, flatten, is, map } from "../src/helpers";
-import {call, clean, Either, maybe, Maybe, right, Try} from "./../monads";
+import {call, clean, maybe, right} from "./../monads";
+import * as Maybe from "./../src/maybemonad";
+import * as Either from "./../src/eithermonad";
+import * as Try from "./../src/trymonad";
 
 describe ("A maybe factory", () => {
     it("should return Just(5) for a value of 5", () => {
-        const mb = Array<Maybe<number>>(maybe<number>(null),
+        const mb = Array<Maybe.Maybe<number>>(maybe<number>(null),
             maybe(4), maybe<number>(undefined), maybe(2), maybe<number>(null));
         const cleaned = clean(mb);
         expect(cleaned.length).toBe(2);
@@ -17,13 +19,25 @@ describe ("A maybe factory", () => {
 describe("Flatten", () => {
 	it("should return nothing for an empty array encapsuled in an arbitrary monad", () => {
 		const a: any[] = [];
-		expect(flatten<number, Maybe<number>>(a).nothing).not.toBeUndefined;
+
+		const flattened = flatten<number, Maybe.Maybe<number>>(a);
+
+		expect(flatten<number, Maybe.Maybe<number>>(a).nothing).not.toBeUndefined;
 	})
 	it("if empty is given, return the correct empty monad for empty arrays", () => {
 		const a: any[] = [];
-		expect((flatten<number, Try<number>>(a, Try.empty)).succeeded).not.toBeUndefined;
-		expect((flatten<number, Maybe<number>>(a, Maybe.empty)).nothing).not.toBeUndefined;
-		const either = (flatten<number, Either<never, number>>(a, Either.empty));
+		expect((flatten<number, Try.Try<number>>(a, Try.empty)).succeeded).not.toBeUndefined;
+		expect((flatten<number, Maybe.Maybe<number>>(a, Maybe.empty)).nothing).not.toBeUndefined;
+		const either = (flatten<number, Either.Either<never, number>>(a, Either.empty));
+		expect(either.isLeft && either.left).not.toBeUndefined;
+	})
+	it("Should properly flatten a filled structure", () => {
+		const tries: Try.Try<number>[] = [call(() => 1),call(() => 2), call(() => 3)];
+		expect((flatten(tries, Try.empty)).succeeded).not.toBeUndefined;
+		const maybes: Maybe.Maybe<number>[] = [maybe(1),maybe(2),maybe(3)];
+		expect((flatten(maybes, Maybe.empty)).nothing).not.toBeUndefined;
+		const eithers: Either.Right<number>[] = [right(1), right(2), right(3)];
+		const either = flatten(eithers, Either.empty);
 		expect(either.isLeft && either.left).not.toBeUndefined;
 	})
 })

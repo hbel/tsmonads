@@ -1,4 +1,4 @@
-import { match, nothing, or, orElse, orUndefined } from "../src/maybemonad";
+import { chain, empty, match, nothing, or, orElse, orUndefined } from "../src/maybemonad";
 import { flatten, forEach, maybe, Maybe } from "./../monads";
 
 describe("A maybe factory", () => {
@@ -36,7 +36,7 @@ describe("Maybe.reduce", () => {
     it("should return a value in", () => {
         const u = maybe({ test: "test" }).reduce((_, t) => t.test, "");
         expect(u).toBe("test");
-        const v = (nothing() as Maybe<any>).reduce((_, t) => t.test, "dummy");
+        const v = (nothing() as Maybe<any>).reduce((_: any, t: any) => t.test, "dummy");
         expect(v).toBe("dummy");
     });
 });
@@ -67,7 +67,7 @@ describe("On a collection of Maybes", () => {
 describe("A maybe of a maybe", () => {
     it("can be chained into a maybe", () => {
         const m = maybe(maybe(5));
-        expect(Maybe.chain(m).orUndefined()).toBe(5);
+        expect(chain(m).orUndefined()).toBe(5);
     });
 });
 
@@ -171,7 +171,7 @@ describe("A Maybe", () => {
         expect(normalArray.length).toBe(4);
         expect(normalArray[0]).toBe(1);
         expect(normalArray[2]).toBe(3);
-        const mbArray2 = Maybe.flatten(mbList);
+        const mbArray2 = flatten(mbList);
         expect(mbArray2.nothing).toBe(false);
     });
     it("Flattening an empty array of Maybes should result in an empty Maybe<Array>", () => {
@@ -212,9 +212,9 @@ describe("maybe functions, ", () => {
 
 describe("empty", () => {
 	it("returns nothing", async () => {
-		expect(Maybe.empty().hasValue).toBeFalsy();
-		expect(Maybe.empty().nothing).toBeTruthy();
-		expect(Maybe.empty().isEmpty()).toBeTruthy();
-		expect(Maybe.empty().equals(maybe(1).empty())).toBeTruthy();
+		expect(empty().hasValue).toBeFalsy();
+		expect(empty().nothing).toBeTruthy();
+		expect(empty().isEmpty()).toBeTruthy();
+		expect(empty().equals(maybe(1).empty())).toBeTruthy();
 	})
 });

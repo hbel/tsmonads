@@ -1,4 +1,4 @@
-import { anyEquals, flatten, Monad } from "./helpers";
+import { anyEquals, flatten as flattenHelper, Monad } from "./helpers";
 import { Just, Maybe, nothing, Nothing } from "./maybemonad";
 
 /**
@@ -21,10 +21,21 @@ export function right<R>(value: R) {
     return new Right<R>(value);
 }
 
+export type Either<L,R> = Left<L> | Right<R>
+
+/**
+     * Turn an array of monads of T into a monad of array of T.
+     */
+export function flatten<L, R>(coll: Array<Either<L, R>>): Either<L[], R[]>{
+	return flattenHelper<R, Either<L,R>>(coll, empty) as Either<L[],R[]>;
+}
+
+export const empty = () => left<Nothing>(nothing());
+
 /**
  * Either monad
  */
-export abstract class Either<L, R> implements Monad<R> {
+export abstract class EitherBase<L, R> implements Monad<R> {
 
     /**
      * Whether the left holds a value
@@ -39,13 +50,6 @@ export abstract class Either<L, R> implements Monad<R> {
     abstract hasValue: boolean;
 
     /**
-     * Turn an array of monads of T into a monad of array of T.
-     */
-    public static flatten<L, R>(coll: Array<Either<L, R>>): Left<L[]> | Right<R[]>{
-        return flatten<R, Either<L,R>>(coll, Either.empty as any) as Left<L[]> | Right<R[]>;
-    }
-    
-    /**
      * Return the start value if the monad is nothing, and f() of the monad if it contains a value
      */
     abstract reduce<V>(f: (total: V, current: R) => V, start: V): V;
@@ -53,13 +57,13 @@ export abstract class Either<L, R> implements Monad<R> {
     /**
      * Map the contained value with the given function. Note that the type of the left value does not change!
      */
-    abstract map<V>(f: (x: R) => V): Left<L> | Right<V>;
+    abstract map<V>(f: (x: R) => V): Either<L,V>;
 
     /**
      * FlatMap the monad using the given function which in turn will return a monad.
      * Note that the type of the left value does not change!
      */
-    abstract flatMap<V>(f: (x: R) => Left<L> | Right<V>): Left<L> | Right<V>;
+    abstract flatMap<V>(f: (x: R) => Either<L,V>): Either<L,V>;
 
     /**
      * Return the "right value"
@@ -90,25 +94,23 @@ export abstract class Either<L, R> implements Monad<R> {
         return anyEquals(this, that);
     }
 
-	public static empty = () => left<Nothing>(nothing());
-
-	public empty = <T>() => Either.empty();
+	public empty = <T>() => empty();
 
 	public isEmpty (){ return this.isLeft; }
 }
 
-export class Left<L> extends Either<L, never> {
+export class Left<L> extends EitherBase<L, never> {
 	public constructor(public readonly left: L) { super(); }
 
 	public readonly isLeft = true;
 	public readonly isRight = false;
 	public readonly hasValue = false;
 
-	public map<V>(f: (x: never) => V): Left<L> | Right<V> {
+	public map<V>(f: (x: never) => V): Either<L,V> {
 		return this;
 	}
 
-	public flatMap<V>(f: (x: never) => Left<L> | Right<never>): Left<L> | Right<never> {
+	public flatMap<V>(f: (x: never) => Left<L> | Right<never>): Either<L,never> {
 		return this;
 	};
 
@@ -116,7 +118,7 @@ export class Left<L> extends Either<L, never> {
         return start;
     }
 
-	public forEach(f: (x: never) => void): void {}
+	public forEach(f: (x: never) => void): void { /**/ }
 
 	public toMaybe = (): Maybe<never> => new Nothing();
 	
@@ -124,7 +126,7 @@ export class Left<L> extends Either<L, never> {
 	
 }
 
-export class Right<R> extends Either<never, R> {
+export class Right<R> extends EitherBase<never, R> {
 	constructor(public readonly value: R) { super(); }
 
 	public readonly isLeft = false;
@@ -135,11 +137,11 @@ export class Right<R> extends Either<never, R> {
         return f(start, this.value);
     }
 
-	public map<V>(f: (x: R) => V): Left<never> | Right<V> {
+	public map<V>(f: (x: R) => V): Either<never,V> {
 		return right(f(this.value));
 	};
 
-	public flatMap<V>(f: (x: R) => Left<never> | Right<V>): Left<never> | Right<V> {
+	public flatMap<V>(f: (x: R) => Either<never,V>): Either<never,V> {
 		return f(this.value);
 	};
 

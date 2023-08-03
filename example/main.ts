@@ -1,4 +1,5 @@
-import {maybe, Maybe, call, Try, flatten} from "../monads";
+import {maybe, call} from "../monads";
+import * as Try from "../src/trymonad";
 import { clean } from "../src/helpers";
 
 const add10 = (a: number) => a + 10;

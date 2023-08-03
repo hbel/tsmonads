@@ -1,4 +1,4 @@
-import { anyEquals, chain, flatten, Monad } from "./helpers";
+import { anyEquals, chain as chainHelper, flatten as flattenHelper, Monad } from "./helpers";
 import { Maybe, maybe, Nothing } from "./maybemonad";
 
 /**
@@ -8,10 +8,10 @@ import { Maybe, maybe, Nothing } from "./maybemonad";
 export function call<T>(f: () => T): Success<T> | Failure {
     try {
         const result = f();
-        return Try.fromValue(result);
+        return fromValue(result);
     }
     catch (ex) {
-        return Try.fromError(ex);
+        return fromError(ex);
     }
 }
 
@@ -24,32 +24,38 @@ export function wrapPromise<T>(p: () => Promise<T>): Promise<Success<T> | Failur
 	return p().then(s => new Success(s)).catch(e => new Failure(e));
 }
 
+export type Try<T> = Success<T> | Failure;
+
+/**
+     * Remove one monadic level from the given Argument
+     */
+export function chain<T, U extends Try<Try<T>>>(monad: U): Try<T> {
+	return chainHelper(monad) as Try<T>;
+}
+
+/**
+ * Turn an array of monads of T into a monad of array of T.
+ */
+export function flatten<T>(coll: Array<Try<T>>): Try<T[]> {
+	return flattenHelper(coll, empty);
+}
+
+export function fromError<T, E extends Error>(error: E): Try<T> {
+	return new Failure(error);
+}
+
+export function fromValue<T>(value: T): Try<T> {
+	return new Success(value);
+}
+
+export const empty = () => new Failure(new Error());
+
+
 /**
  *  Try monad
  */
-export abstract class Try<T> implements Monad<T> {
+export abstract class TryBase<T> implements Monad<T> {
 
-    /**
-     * Remove one monadic level from the given Argument
-     */
-    public static chain<T, U extends Try<Try<T>>>(monad: U): Success<T> | Failure {
-        return chain(monad) as Success<T> | Failure;
-    }
-
-    /**
-     * Turn an array of monads of T into a monad of array of T.
-     */
-    public static flatten<T>(coll: Array<Try<T>>): Success<T[]> | Failure {
-        return flatten(coll, Try.empty) as Success<T[]> | Failure;
-    }
-
-	public static fromError<T, E extends Error>(error: E): Success<T> | Failure {
-		return new Failure(error);
-	}
-
-	public static fromValue<T>(value: T): Success<T> | Failure {
-		return new Success(value);
-	}
 
     // Whether the call has succeeded without an exception
     public succeeded: true | false;
@@ -61,22 +67,22 @@ export abstract class Try<T> implements Monad<T> {
     /**
      * Function that should be called if this is a Success
      */
-    public abstract onSuccess(f: (x: T) => void): Success<T> | Failure;
+    public abstract onSuccess(f: (x: T) => void): Try<T>;
 
     /**
      * Function to be called if this is a Failure
      */
-    public abstract onFailure(f: (error: Error) => void): Success<T> | Failure;
+    public abstract onFailure(f: (error: Error) => void): Try<T>;
 
     /**
      * Map the result using another function
      */
-    public abstract map<U>(f: (x: T) => U): Success<U> | Failure;
+    public abstract map<U>(f: (x: T) => U): Try<U>;
 
     /**
      * Flat map the result
      */
-    public abstract flatMap<U>(f: (x: T) => Success<U> | Failure): Success<U> | Failure;
+    public abstract flatMap<U>(f: (x: T) => Try<U>): Try<U>;
 
     /**
      * Run forEach on the monad. Will be executed only if the monad
@@ -89,7 +95,7 @@ export abstract class Try<T> implements Monad<T> {
      */
     public abstract toMaybe(): Maybe<T>;
 
-    public abstract unit<V>(x: V): Success<V> | Failure;
+    public abstract unit<V>(x: V): Try<V>;
 
     /**
      * Return the start value if the monad is nothing, and f() of the monad if it contains a value
@@ -100,24 +106,22 @@ export abstract class Try<T> implements Monad<T> {
      * Check whether two Try instances are equal
      * @param that
      */
-    public abstract equals<U>(that: Success<U> | Failure): boolean;
+    public abstract equals<U>(that: Try<U>): boolean;
 
 	/**
      * Convert to promise
      */
 	public abstract toPromise(): Promise<T>;
 
-	public static empty = () => new Failure(new Error());
-
 	public abstract isEmpty(): boolean;
 }
 
-export class Success<T> implements Try<T> {
+export class Success<T> implements TryBase<T> {
     constructor(public readonly value: T) { }
 
-    public onSuccess(f: (x: T) => void): this | Failure { f(this.value); return this; }
+    public onSuccess(f: (x: T) => void): Try<T> { f(this.value); return this; }
 
-    public onFailure(_: (error: Error) => void): this | Failure { return this; }
+    public onFailure(_: (error: Error) => void): Try<T> { return this; }
 
     public reduce<V>(f: (total: V, current: T) => V, start: V): V { return f(start, this.value); }
 
@@ -125,15 +129,15 @@ export class Success<T> implements Try<T> {
 
     public get result(): T { return this.value; }
 
-	public map<U>(f: (x: T) => U): Success<U> | Failure {
+	public map<U>(f: (x: T) => U): Try<U> {
         return call<U>(() => f(this.value));
     }
 
-    public flatMap<U>(f: (x: T) => Success<U> | Failure): Success<U> | Failure {
+    public flatMap<U>(f: (x: T) => Try<U>): Try<U> {
         return f(this.value);
     }
 
-    public unit<V>(x: V): Success<V> | Failure {
+    public unit<V>(x: V): Try<V> {
         return call(() => x);
     }
 
@@ -143,7 +147,7 @@ export class Success<T> implements Try<T> {
 
     public toMaybe = () => maybe(this.value);
 
-    public equals<U>(that: Success<U> | Failure): boolean {
+    public equals<U>(that: Try<U>): boolean {
         return anyEquals(this, that);
     }
 
@@ -151,15 +155,15 @@ export class Success<T> implements Try<T> {
 
 	public isEmpty() { return false; }
 
-	public empty = () => Try.empty();
+	public empty = () => empty();
 }
 
-export class Failure implements Try<never> {
+export class Failure implements TryBase<never> {
     constructor(private readonly _error: Error) { }
 
-    public onSuccess(_f: (x: never) => void): Success<never> | this { return this; }
+    public onSuccess(_f: (x: never) => void): Try<never> { return this; }
 
-    public onFailure(f: (error: Error) => void): Success<never> | this { f(this._error); return this; }
+    public onFailure(f: (error: Error) => void): Try<never> { f(this._error); return this; }
 
     public reduce<V>(_: (total: V, current: never) => V, start: V): V { return start; }
 
@@ -167,15 +171,15 @@ export class Failure implements Try<never> {
 
     public get error(): Error { return this._error; }
 
-    public map<U>(_f: (x: never) => U): Success<U> | this {
+    public map<U>(_f: (x: never) => U): Try<U> {
         return this;
     }
 
-    public flatMap<U>(_f: (x: never) => Success<U> | this): Success<U> | this {
+    public flatMap<U>(_f: (x: never) => Try<U>): Try<U> {
         return this;
     }
 
-    public unit<V>(x: V): Success<V> | Failure {
+    public unit<V>(x: V): Try<V> {
         return call(() => x);
     }
 
@@ -186,7 +190,7 @@ export class Failure implements Try<never> {
 
     public toMaybe = () => new Nothing();
 
-    public equals<U>(that: Success<U> | Failure): boolean {
+    public equals<U>(that: Try<U>): boolean {
         return anyEquals(this, that);
     }
 
@@ -194,5 +198,5 @@ export class Failure implements Try<never> {
 
 	public isEmpty() { return true; }
 
-	public empty = () => Try.empty();
+	public empty = () => empty();
 }

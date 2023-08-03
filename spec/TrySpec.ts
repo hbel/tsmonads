@@ -1,4 +1,4 @@
-import { Failure, wrapPromise } from "../src/trymonad";
+import { Failure, chain, empty, wrapPromise } from "../src/trymonad";
 import { call, flatten, Try } from "./../monads";
 
 describe("The call function", () => {
@@ -43,7 +43,7 @@ describe("wraps a promise", () => {
 describe("A try of a try", () => {
     it("can be chained into a try", () => {
         const m = call(() => call(() => 5));
-		const chained = Try.chain(m);
+		const chained = chain(m);
         expect(chained.succeeded).toBe(true);
         expect(chained.succeeded && chained.result).toBe(5);
     });
@@ -111,12 +111,12 @@ describe("Converting try  monad to promise", () => {
 describe("Flattening an array of Tries", () => {
 	it("should correctly flatten to success in", async () => {
 		const arr = [call(() => 2 + 3), call(() => 3 + 4)];
-		const flattened = Try.flatten(arr);
+		const flattened = flatten(arr);
 		expect(flattened.succeeded && flattened.result).toEqual([5, 7])
 	});
 	it("should correctly flatten to failed in", async () => {
 		const arr = [call(() => 2 + 3), call(() => { throw new Error("Foo"); })];
-		const flattened = Try.flatten(arr);
+		const flattened = flatten(arr);
 		expect(flattened.succeeded).toBeFalsy();
 		expect(!flattened.succeeded && flattened.error.message).toBe("Foo");
 	})
@@ -149,7 +149,7 @@ describe("Flatten on an array of try monads", () => {
         const tryList = [t1, t2, t3];
         const tryArray = flatten(tryList) as Try<number[]>;
         expect(tryArray.succeeded).toBe(true);
-        const tryArray2 = Try.flatten(tryList);
+        const tryArray2 = flatten(tryList);
         expect(tryArray2.succeeded).toBe(true);
     });
     it("will set a flattened try array to failure if a single function call failed", () => {
@@ -159,16 +159,16 @@ describe("Flatten on an array of try monads", () => {
         const tryList = [t1, t2, t3];
         const tryArray = flatten(tryList) as Try<number[]>;
         expect(tryArray.succeeded).toBe(false);
-        const tryArray2 = Try.flatten(tryList);
+        const tryArray2 = flatten(tryList);
         expect(tryArray2.succeeded).toBe(false);
     });
 });
 
 describe("empty", () => {
 	it("returns a Failure with an empty error object", async () => {
-		expect(Try.empty().succeeded).toBeFalsy();
-		expect(Try.empty().error.name).toEqual(new Error().name);
-		expect(Try.empty().isEmpty()).toBeTruthy();
-		expect(Try.empty().error.name === new Failure(new Error()).empty().error.name).toBeTruthy();
+		expect(empty().succeeded).toBeFalsy();
+		expect(empty().error.name).toEqual(new Error().name);
+		expect(empty().isEmpty()).toBeTruthy();
+		expect(empty().error.name === new Failure(new Error()).empty().error.name).toBeTruthy();
 	})
 });

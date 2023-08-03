@@ -1,4 +1,5 @@
-import { Either, flatten, left, map, right } from "./../monads";
+import { empty, flatten } from "../src/eithermonad";
+import { Either, left, right } from "./../monads";
 
 describe("A left value", () => {
     it("should return an Either that has a left and no right value", () => {
@@ -48,7 +49,7 @@ describe("Either.reduce", () => {
     it("should return a value in", () => {
         const u = right<any>({ test: "test" }).reduce((_, w) => w.test, "");
         expect(u).toBe("test");
-        const v = (left<string>("error") as Either<string, any>).reduce((_, w) => w.test, "dummy");
+        const v = (left<string>("error") as Either<string, any>).reduce((_: any, w: any) => w.test, "dummy");
         expect(v).toBe("dummy");
     });
 });
@@ -83,7 +84,7 @@ describe("Flattening an array of Eithers", () => {
         const eithers = [right(5), right(4), right(3)];
         const flattened = flatten(eithers) as Either<any[], number[]>;
         expect(flattened.isRight).toBe(true);
-        const flattened2 = Either.flatten(eithers);
+        const flattened2 = flatten(eithers);
         expect(flattened2.isRight).toBe(true);
     });
     it("should be a left if any either is a left", () => {
@@ -94,18 +95,18 @@ describe("Flattening an array of Eithers", () => {
         right<number>(3)]) as Either<number[], Array<number>>).isLeft).toBe(true);
         expect((flatten([right<number>(5), right<number>(4),
         left<number>(3)]) as Either<number[], number[]>).isLeft).toBe(true);
-        expect(Either.flatten([left<number>(5), right<number>(4),
+        expect(flatten([left<number>(5), right<number>(4),
         right<number>(3)]).isLeft).toBe(true);
-        expect(Either.flatten([right<number>(5), right<number>(4),
+        expect(flatten([right<number>(5), right<number>(4),
         left<number>(3)]).isLeft).toBe(true);
     });
 });
 
 describe("empty", () => {
 	it("returns an arbitrary left", async () => {
-		expect(Either.empty().isRight).toBeFalsy();
-		expect(Either.empty().isLeft).toBeTruthy();
-		expect(Either.empty().isEmpty()).toBeTruthy();
-		expect(Either.empty().equals(left(1).empty())).toBeTruthy();
+		expect(empty().isRight).toBeFalsy();
+		expect(empty().isLeft).toBeTruthy();
+		expect(empty().isEmpty()).toBeTruthy();
+		expect(empty().equals(left(1).empty())).toBeTruthy();
 	})
 });
