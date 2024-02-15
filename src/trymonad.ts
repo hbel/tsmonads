@@ -1,5 +1,10 @@
-import { anyEquals, chain as chainHelper, flatten as flattenHelper, Monad } from "./helpers";
-import { Maybe, maybe, Nothing } from "./maybemonad";
+import {
+    anyEquals,
+    chain as chainHelper,
+    flatten as flattenHelper,
+    type Monad,
+} from "./helpers";
+import { type Maybe, maybe, Nothing } from "./maybemonad";
 
 /**
  * Tries to call the given function. Returns a Success if
@@ -9,8 +14,7 @@ export function call<T>(f: () => T): Success<T> | Failure {
     try {
         const result = f();
         return fromValue(result);
-    }
-    catch (ex) {
+    } catch (ex) {
         return fromError(ex);
     }
 }
@@ -20,43 +24,44 @@ export function call<T>(f: () => T): Success<T> | Failure {
  * @param p Promise
  * @returns Promise of a Try monad
  */
-export function wrapPromise<T>(p: () => Promise<T>): Promise<Success<T> | Failure> {
-	return p().then(s => new Success(s)).catch(e => new Failure(e));
+export async function wrapPromise<T>(
+    p: () => Promise<T>
+): Promise<Success<T> | Failure> {
+    return await p()
+        .then((s) => new Success(s))
+        .catch((e: Error) => new Failure(e));
 }
 
 export type Try<T> = Success<T> | Failure;
 
 /**
-     * Remove one monadic level from the given Argument
-     */
+ * Remove one monadic level from the given Argument
+ */
 export function chain<T, U extends Try<Try<T>>>(monad: U): Try<T> {
-	return chainHelper(monad) as Try<T>;
+    return chainHelper(monad) as Try<T>;
 }
 
 /**
  * Turn an array of monads of T into a monad of array of T.
  */
 export function flatten<T>(coll: Array<Try<T>>): Try<T[]> {
-	return flattenHelper(coll, empty);
+    return flattenHelper(coll, empty);
 }
 
 export function fromError<T, E extends Error>(error: E): Try<T> {
-	return new Failure(error);
+    return new Failure(error);
 }
 
 export function fromValue<T>(value: T): Try<T> {
-	return new Success(value);
+    return new Success(value);
 }
 
-export const empty = () => new Failure(new Error());
-
+export const empty = (): Failure => new Failure(new Error());
 
 /**
  *  Try monad
  */
 export abstract class TryBase<T> implements Monad<T> {
-
-
     // Whether the call has succeeded without an exception
     public succeeded: true | false;
 
@@ -108,28 +113,37 @@ export abstract class TryBase<T> implements Monad<T> {
      */
     public abstract equals<U>(that: Try<U>): boolean;
 
-	/**
+    /**
      * Convert to promise
      */
-	public abstract toPromise(): Promise<T>;
+    public abstract toPromise(): Promise<T>;
 
-	public abstract isEmpty(): boolean;
+    public abstract isEmpty(): boolean;
 }
 
 export class Success<T> implements TryBase<T> {
-    constructor(public readonly value: T) { }
+    constructor(public readonly value: T) {}
 
-    public onSuccess(f: (x: T) => void): Try<T> { f(this.value); return this; }
+    public onSuccess(f: (x: T) => void): Try<T> {
+        f(this.value);
+        return this;
+    }
 
-    public onFailure(_: (error: Error) => void): Try<T> { return this; }
+    public onFailure(_: (error: Error) => void): Try<T> {
+        return this;
+    }
 
-    public reduce<V>(f: (total: V, current: T) => V, start: V): V { return f(start, this.value); }
+    public reduce<V>(f: (total: V, current: T) => V, start: V): V {
+        return f(start, this.value);
+    }
 
     public readonly succeeded = true;
 
-    public get result(): T { return this.value; }
+    public get result(): T {
+        return this.value;
+    }
 
-	public map<U>(f: (x: T) => U): Try<U> {
+    public map<U>(f: (x: T) => U): Try<U> {
         return call<U>(() => f(this.value));
     }
 
@@ -141,35 +155,50 @@ export class Success<T> implements TryBase<T> {
         return call(() => x);
     }
 
-    public forEach = (f: (x: T) => void): void => f(this.value);
+    public forEach = (f: (x: T) => void): void => {
+        f(this.value);
+    };
 
     public readonly hasValue = true;
 
-    public toMaybe = () => maybe(this.value);
+    public toMaybe = (): Maybe<T> => maybe(this.value);
 
     public equals<U>(that: Try<U>): boolean {
         return anyEquals(this, that);
     }
 
-	public toPromise(): Promise<T> { return Promise.resolve(this.value) }
+    public async toPromise(): Promise<T> {
+        return await Promise.resolve(this.value);
+    }
 
-	public isEmpty() { return false; }
+    public isEmpty(): boolean {
+        return false;
+    }
 
-	public empty = () => empty();
+    public empty = (): Failure => empty();
 }
 
 export class Failure implements TryBase<never> {
-    constructor(private readonly _error: Error) { }
+    constructor(private readonly _error: Error) {}
 
-    public onSuccess(_f: (x: never) => void): Try<never> { return this; }
+    public onSuccess(_f: (x: never) => void): Try<never> {
+        return this;
+    }
 
-    public onFailure(f: (error: Error) => void): Try<never> { f(this._error); return this; }
+    public onFailure(f: (error: Error) => void): Try<never> {
+        f(this._error);
+        return this;
+    }
 
-    public reduce<V>(_: (total: V, current: never) => V, start: V): V { return start; }
+    public reduce<V>(_: (total: V, current: never) => V, start: V): V {
+        return start;
+    }
 
     public readonly succeeded = false;
 
-    public get error(): Error { return this._error; }
+    public get error(): Error {
+        return this._error;
+    }
 
     public map<U>(_f: (x: never) => U): Try<U> {
         return this;
@@ -183,20 +212,23 @@ export class Failure implements TryBase<never> {
         return call(() => x);
     }
 
-    // tslint:disable-next-line:no-empty
-    public forEach(_f: (x: never) => void): void { return; }
+    public forEach(_f: (x: never) => void): void {}
 
     public readonly hasValue = false;
 
-    public toMaybe = () => new Nothing();
+    public toMaybe = (): Nothing => new Nothing();
 
     public equals<U>(that: Try<U>): boolean {
         return anyEquals(this, that);
     }
 
-	public toPromise(): Promise<never> { return Promise.reject(this._error); }
+    public async toPromise(): Promise<never> {
+        return await Promise.reject(this._error);
+    }
 
-	public isEmpty() { return true; }
+    public isEmpty(): boolean {
+        return true;
+    }
 
-	public empty = () => empty();
+    public empty = (): Failure => empty();
 }

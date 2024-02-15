@@ -1,5 +1,5 @@
 import { empty, flatten } from "../src/eithermonad";
-import { Either, left, right } from "./../monads";
+import { type Either, left, right } from "./../monads";
 
 describe("A left value", () => {
     it("should return an Either that has a left and no right value", () => {
@@ -10,7 +10,7 @@ describe("A left value", () => {
     });
     it("should be mappable using map and flatmap", () => {
         const m = left<number>(5);
-		const mapped = m.map((x: any) => x + 2);
+        const mapped = m.map((x: number) => x + 2);
         expect(!mapped.hasValue && mapped.left).toBe(5);
     });
 });
@@ -24,9 +24,9 @@ describe("A right value", () => {
     });
     it("should be mappable using map and flatmap", () => {
         const m = right(5);
-		const mapped1 = m.map((x: number) => x + 2);
+        const mapped1 = m.map((x: number) => x + 2);
         expect(mapped1.hasValue && mapped1.value).toBe(7);
-		const mapped2 = m.map((x: number) => x > 2);
+        const mapped2 = m.map((x: number) => x > 2);
         expect(mapped2.hasValue && mapped2.value).toBe(true);
     });
 });
@@ -47,9 +47,15 @@ describe("Either.equal", () => {
 
 describe("Either.reduce", () => {
     it("should return a value in", () => {
-        const u = right<any>({ test: "test" }).reduce((_, w) => w.test, "");
+        const u = right<{ test: string }>({ test: "test" }).reduce(
+            (_, w) => w.test,
+            ""
+        );
         expect(u).toBe("test");
-        const v = (left<string>("error") as Either<string, any>).reduce((_: any, w: any) => w.test, "dummy");
+        const v = (left<string>("error") as Either<string, unknown>).reduce(
+            (_, w: { test: string }) => w.test,
+            "dummy"
+        );
         expect(v).toBe("dummy");
     });
 });
@@ -67,46 +73,65 @@ describe("Converting either monad to maybe monad", () => {
     });
 });
 
-
 describe("Converting either monad to promise", () => {
     it("should convert a Right into a resolve", async () => {
         const t = await right(5).toPromise();
-    	expect(t).toBe(5);
+        expect(t).toBe(5);
     });
     it("should convert a Left into a reject", (done) => {
         const t = left(0).toPromise();
-		t.catch(() => done());
+        t.catch(() => {
+            done();
+        });
     });
 });
 
 describe("Flattening an array of Eithers", () => {
     it("should give you an Either array", () => {
         const eithers = [right(5), right(4), right(3)];
-        const flattened = flatten(eithers) as Either<any[], number[]>;
+        const flattened = flatten(eithers) as Either<unknown[], number[]>;
         expect(flattened.isRight).toBe(true);
         const flattened2 = flatten(eithers);
         expect(flattened2.isRight).toBe(true);
     });
     it("should be a left if any either is a left", () => {
         const eithers = [right<number>(5), left<number>(4), right<number>(3)];
-        const flattened = flatten(eithers) as Either<number[], Array<number>>;
+        const flattened = flatten(eithers) as Either<number[], number[]>;
         expect(flattened.isLeft).toBe(true);
-        expect((flatten([left<number>(5), right<number>(4),
-        right<number>(3)]) as Either<number[], Array<number>>).isLeft).toBe(true);
-        expect((flatten([right<number>(5), right<number>(4),
-        left<number>(3)]) as Either<number[], number[]>).isLeft).toBe(true);
-        expect(flatten([left<number>(5), right<number>(4),
-        right<number>(3)]).isLeft).toBe(true);
-        expect(flatten([right<number>(5), right<number>(4),
-        left<number>(3)]).isLeft).toBe(true);
+        expect(
+            (
+                flatten([
+                    left<number>(5),
+                    right<number>(4),
+                    right<number>(3),
+                ]) as Either<number[], number[]>
+            ).isLeft
+        ).toBe(true);
+        expect(
+            (
+                flatten([
+                    right<number>(5),
+                    right<number>(4),
+                    left<number>(3),
+                ]) as Either<number[], number[]>
+            ).isLeft
+        ).toBe(true);
+        expect(
+            flatten([left<number>(5), right<number>(4), right<number>(3)])
+                .isLeft
+        ).toBe(true);
+        expect(
+            flatten([right<number>(5), right<number>(4), left<number>(3)])
+                .isLeft
+        ).toBe(true);
     });
 });
 
 describe("empty", () => {
-	it("returns an arbitrary left", async () => {
-		expect(empty().isRight).toBeFalsy();
-		expect(empty().isLeft).toBeTruthy();
-		expect(empty().isEmpty()).toBeTruthy();
-		expect(empty().equals(left(1).empty())).toBeTruthy();
-	})
+    it("returns an arbitrary left", () => {
+        expect(empty().isRight).toBeFalsy();
+        expect(empty().isLeft).toBeTruthy();
+        expect(empty().isEmpty()).toBeTruthy();
+        expect(empty().equals(left(1).empty())).toBeTruthy();
+    });
 });

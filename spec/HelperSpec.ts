@@ -18,7 +18,7 @@ describe ("A maybe factory", () => {
 
 describe("Flatten", () => {
 	it("should return nothing for an empty array encapsuled in an arbitrary monad", () => {
-		const a: any[] = [];
+		const a: number[] = [];
 
 		const flattened = flatten<number, Maybe.Maybe<number>>(a);
 
