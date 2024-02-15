@@ -6,12 +6,12 @@ describe("A left value", () => {
         const m = left(5);
         expect(m.isLeft).toBe(true);
         expect(m.isRight).toBe(false);
-        expect(m.left).toBe(5);
+        expect(m.value).toBe(5);
     });
     it("should be mappable using map and flatmap", () => {
         const m = left<number>(5);
         const mapped = m.map((x: number) => x + 2);
-        expect(!mapped.hasValue && mapped.left).toBe(5);
+        expect(!mapped.hasValue && mapped.value).toBe(5);
     });
 });
 
@@ -28,6 +28,29 @@ describe("A right value", () => {
         expect(mapped1.hasValue && mapped1.value).toBe(7);
         const mapped2 = m.map((x: number) => x > 2);
         expect(mapped2.hasValue && mapped2.value).toBe(true);
+    });
+});
+
+describe("Either match function", () => {
+    it("Should run the left branch for a left", () => {
+        let result = 0;
+        left(7).match(
+            (v) => {
+                result = v;
+            },
+            (_f) => {}
+        );
+        expect(result).toBe(7);
+    });
+    it("Should run the right branch for a right", () => {
+        let result = 0;
+        right(8).match(
+            (_v) => {},
+            (f) => {
+                result = f;
+            }
+        );
+        expect(result).toBe(8);
     });
 });
 

@@ -1,3 +1,4 @@
+import { type Either, right, left } from "../monads";
 import {
     anyEquals,
     chain as chainHelper,
@@ -118,7 +119,14 @@ export abstract class TryBase<T> implements Monad<T> {
      */
     public abstract toPromise(): Promise<T>;
 
+    public abstract toEither(): Either<Error, T>;
+
     public abstract isEmpty(): boolean;
+
+    /**
+     * Match the monad by executing a specific functions depending on wether it holds a success or failure
+     */
+    public abstract match<U>(success: (x: T) => U, failure: (x: Error) => U): U;
 }
 
 export class Success<T> implements TryBase<T> {
@@ -176,6 +184,11 @@ export class Success<T> implements TryBase<T> {
     }
 
     public empty = (): Failure => empty();
+
+    public toEither = (): Either<Error, T> => right(this.value);
+
+    public match = <U>(success: (x: T) => U, failure: (x: Error) => U): U =>
+        success(this.value);
 }
 
 export class Failure implements TryBase<never> {
@@ -231,4 +244,9 @@ export class Failure implements TryBase<never> {
     }
 
     public empty = (): Failure => empty();
+
+    public toEither = (): Either<Error, never> => left(this.error);
+
+    public match = <U>(success: (x: never) => U, failure: (x: Error) => U): U =>
+        failure(this.error);
 }

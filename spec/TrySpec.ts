@@ -1,4 +1,11 @@
-import { Failure, chain, empty, wrapPromise } from "../src/trymonad";
+import {
+    Failure,
+    chain,
+    empty,
+    wrapPromise,
+    fromValue,
+    fromError,
+} from "../src/trymonad";
 import { call, flatten, type Try } from "./../monads";
 
 describe("The call function", () => {
@@ -122,6 +129,21 @@ describe("Converting try monad to maybe monad", () => {
     });
 });
 
+describe("Converting try monad to either monad", () => {
+    it("Should convert a Success into a Right", () => {
+        const t = call(() => 2 + 3);
+        expect(t.toEither().hasValue).toBe(true);
+        expect(t.toEither().isRight).toBe(true);
+    });
+    it("Should convert a Failure into a Left", () => {
+        const t = call<number>(() => {
+            throw new Error("Error");
+        });
+        expect(t.toEither().hasValue).toBe(false);
+        expect(t.toEither().isLeft).toBe(true);
+    });
+});
+
 describe("Converting try  monad to promise", () => {
     it("should convert a success into a resolve", async () => {
         const t = await call(() => 2 + 3).toPromise();
@@ -173,6 +195,29 @@ describe("Flatmap of Try monads", () => {
         expect(t3.succeeded).toBe(false);
         expect(!t3.succeeded && t3.error.message).toBe("Bar");
         expect(!t3.succeeded && t3.error.name).toBe("TypeError");
+    });
+});
+
+describe("Try match function", () => {
+    it("Should run the success branch for a success", () => {
+        let result = 0;
+        fromValue(7).match(
+            (v) => {
+                result = v;
+            },
+            (_f) => {}
+        );
+        expect(result).toBe(7);
+    });
+    it("Should run the failure branch for a failure", () => {
+        let result = "";
+        fromError(new Error("Something went wrong")).match(
+            (_v) => {},
+            (f) => {
+                result = f.message;
+            }
+        );
+        expect(result).toBe("Something went wrong");
     });
 });
 

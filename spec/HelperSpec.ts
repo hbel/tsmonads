@@ -39,7 +39,7 @@ describe("Flatten", () => {
             a,
             Either.empty
         );
-        expect(either.isLeft && either.left).not.toBeUndefined();
+        expect(either.isLeft && either.value).not.toBeUndefined();
     });
     it("Should properly flatten a filled structure", () => {
         const tries: Array<Try.Try<number>> = [
@@ -60,7 +60,7 @@ describe("Flatten", () => {
             right(3),
         ];
         const either = flatten(eithers, Either.empty);
-        expect(either.isLeft && either.left).not.toBeUndefined();
+        expect(either.isLeft && either.value).not.toBeUndefined();
     });
 });
 

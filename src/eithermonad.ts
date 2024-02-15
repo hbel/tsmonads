@@ -98,10 +98,15 @@ export abstract class EitherBase<L, R> implements Monad<R> {
     public isEmpty(): boolean {
         return this.isLeft;
     }
+
+    /**
+     * Match the monad by executing a specific functions depending on wether it holds a left or right value
+     */
+    public abstract match<U>(left: (x: L) => U, right: (x: R) => U): U;
 }
 
 export class Left<L> extends EitherBase<L, never> {
-    public constructor(public readonly left: L) {
+    public constructor(public readonly value: L) {
         super();
     }
 
@@ -128,7 +133,10 @@ export class Left<L> extends EitherBase<L, never> {
     public toMaybe = (): Maybe<never> => new Nothing();
 
     public toPromise = async (): Promise<never> =>
-        await Promise.reject(this.left);
+        await Promise.reject(this.value);
+
+    public match = <U>(left: (x: L) => U, right: (x: never) => U): U =>
+        left(this.value);
 }
 
 export class Right<R> extends EitherBase<never, R> {
@@ -160,4 +168,7 @@ export class Right<R> extends EitherBase<never, R> {
 
     public toPromise = async (): Promise<R> =>
         await Promise.resolve(this.value);
+
+    public match = <U>(left: (x: never) => U, right: (x: R) => U): U =>
+        right(this.value);
 }
