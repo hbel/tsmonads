@@ -23,7 +23,9 @@ export function anyEquals(x: any, y: any): boolean {
     if (x === null || x === undefined || y === undefined) {
         return x === y;
     }
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/no-unsafe-member-access
     if (x.constructor && y.constructor) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (x.constructor !== y.constructor) {
             return false;
         }
@@ -34,6 +36,7 @@ export function anyEquals(x: any, y: any): boolean {
     if (x instanceof RegExp) {
         return x === y;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     if (x === y || x.valueOf() === y.valueOf()) {
         return true;
     }
@@ -52,16 +55,20 @@ export function anyEquals(x: any, y: any): boolean {
     const p = Object.keys(x as Record<string, unknown>);
     return (
         Object.keys(y as Record<string, unknown>).every((i) => p.includes(i)) &&
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         p.every((i) => anyEquals(x[i], y[i]))
     );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type InferEither<T, U, V = Nothing> = T extends EitherBase<V, infer X>
     ? Right<U> | Left<V>
     : Monad<U>;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type InferTry<T, U> = T extends TryBase<infer X>
     ? Success<U> | Failure
     : InferEither<T, U>;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type InferMaybe<T, U> = T extends MaybeBase<infer X>
     ? Just<U> | Nothing
     : InferTry<T, U>;
@@ -82,21 +89,21 @@ export function flatten<T, U extends Monad<T>>(
         return emptyFunc();
     }
     const unit = l[0].unit;
-    const rec = (l_: U[], r: T[]): Monad<U[] | T[]> => {
+    const rec = (l_: U[], r: T[]): Monad<T[]> => {
         if (l_.length === 0) {
             return unit(r);
         }
         return l_[0].flatMap((x) => rec(l_.slice(1), r.concat([x])));
     };
     const empty: T[] = [];
-    return rec(l, empty);
+    return rec(l, empty) as InferMaybe<U, T[]>;
 }
 
 // Remove all "empty" monads from an array of monads and lift the remaining values
 export function clean<T, U extends Monad<T>>(coll: U[]): T[] {
     return coll
         .filter((elem) => elem.hasValue)
-        .map((elem) => (elem as unknown as {value: T}).value);
+        .map((elem) => (elem as unknown as { value: T }).value);
 }
 
 // Run foreach on an array of monads
@@ -131,5 +138,6 @@ export function flatMap<T, U, V extends Monad<T>, W extends Monad<U>>(
 }
 
 export function is<T>(f: (x: T) => boolean, monad: Monad<T>): boolean {
-    return monad.hasValue && (monad.map(f) as any).value;
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+    return monad.hasValue && !!(monad.map(f) as any).value;
 }
