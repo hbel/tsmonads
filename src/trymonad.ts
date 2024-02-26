@@ -49,6 +49,15 @@ export function flatten<T>(coll: Array<Try<T>>): Try<T[]> {
     return flattenHelper(coll, empty);
 }
 
+export function fromErrorOrValue<T, E extends Error>(
+    errorOrValue: E | T
+): Try<T> {
+    if (errorOrValue instanceof Error) {
+        return fromError(errorOrValue);
+    }
+    return fromValue(errorOrValue);
+}
+
 export function fromError<T, E extends Error>(error: E): Try<T> {
     return new Failure(error);
 }

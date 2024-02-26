@@ -6,6 +6,7 @@ export {
     Failure,
     fromError,
     fromValue,
+    fromErrorOrValue,
 } from "./src/trymonad";
 export {
     maybe,
