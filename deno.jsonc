@@ -10,7 +10,7 @@
   },
   "publish": {
     "exclude": [
-      "spec", "example"
+      "spec", "example", "docs", ".vscode"
     ]
   },
   "tasks": {
