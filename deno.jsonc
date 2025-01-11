@@ -1,0 +1,31 @@
+{
+  "name": "tsmonads",
+  "version": "4.0.0",
+  "imports": {
+    "@std/assert": "jsr:@std/assert@^1.0.10",
+  },
+  "exports": {
+    ".": "./monads.ts",
+    "./src/*": "./src/*.ts"
+  },
+  "tasks": {
+    "test": "deno test spec/*",
+    "check": "deno check monads.ts src/*.ts",
+    "build:npm": "deno run -A build_npm.ts"
+  },
+  "fmt": {
+    "files": {
+      "include": ["monads.ts", "src/", "spec/", "example/"]
+    }
+  },
+  "lint": {
+    "files": {
+      "include": ["monads.ts", "src/", "spec/", "example/"]
+    }
+  },
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true
+  }
+}
