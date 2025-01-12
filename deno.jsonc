@@ -1,12 +1,17 @@
 {
-  "name": "tsmonads",
-  "version": "4.0.0",
+  "name": "@itu/tsmonads",
+  "version": "4.0.1",
+  "license": "MIT",
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.10",
   },
   "exports": {
-    ".": "./monads.ts",
-    "./src/*": "./src/*.ts"
+    ".": "./monads.ts"
+  },
+  "publish": {
+    "exclude": [
+      "spec", "example", "docs", ".vscode"
+    ]
   },
   "tasks": {
     "test": "deno test spec/*",
