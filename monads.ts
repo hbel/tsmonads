@@ -1,7 +1,7 @@
 export {
   call,
   wrapPromise,
-  type Try,
+  Try,
   Success,
   Failure,
   fromError,
@@ -10,7 +10,7 @@ export {
 } from "./src/trymonad.ts";
 export {
   maybe,
-  type Maybe,
+  Maybe,
   nothing,
   Nothing,
   Just,
@@ -19,7 +19,7 @@ export {
   orElse,
   orUndefined,
 } from "./src/maybemonad.ts";
-export { left, right, EitherBase as Either } from "./src/eithermonad.ts";
+export { left, right, Either } from "./src/eithermonad.ts";
 export {
   flatten,
   forEach,

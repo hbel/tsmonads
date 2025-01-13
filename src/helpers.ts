@@ -109,11 +109,13 @@ export function clean<T, M, U extends Monad<T, M>>(coll: U[]): T[] {
 }
 
 // Run foreach on an array of monads
-export function forEach<T, M, U extends Monad<T, M>>(
+// deno-lint-ignore no-explicit-any
+export function forEach<T, U extends Monad<T, any>>(
   coll: U[],
   f: (x: T) => void
 ): void {
-  coll.forEach((y: Monad<T, M>) => {
+  // deno-lint-ignore no-explicit-any
+  coll.forEach((y: Monad<T, any>) => {
     y.forEach(f);
   });
 }

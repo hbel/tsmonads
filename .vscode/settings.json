@@ -2,6 +2,8 @@
     "cSpell.words": [
         "eithermonad",
         "maybemonad",
-        "trymonad"
-    ]
+        "trymonad",
+        "tsmonads"
+    ],
+    "deno.enable": true
 }

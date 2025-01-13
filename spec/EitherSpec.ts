@@ -5,8 +5,7 @@ import {
   assertRejects,
 } from "jsr:@std/assert";
 
-import { empty, flatten } from "../src/eithermonad.ts";
-import { type Either, left, right } from "./../monads.ts";
+import { Either, left, right } from "./../monads.ts";
 
 Deno.test("A left value", () => {
   Deno.test(
@@ -122,18 +121,18 @@ Deno.test("Converting either monad to promise", () => {
 Deno.test("Flattening an array of Eithers", () => {
   Deno.test("should give you an Either array", () => {
     const eithers = [right(5), right(4), right(3)];
-    const flattened = flatten(eithers) as Either<unknown[], number[]>;
+    const flattened = Either.flatten(eithers) as Either<unknown[], number[]>;
     assert(flattened.isRight);
-    const flattened2 = flatten(eithers);
+    const flattened2 = Either.flatten(eithers);
     assert(flattened2.isRight);
   });
   Deno.test("should be a left if any either is a left", () => {
     const eithers = [right<number>(5), left<number>(4), right<number>(3)];
-    const flattened = flatten(eithers) as Either<number[], number[]>;
+    const flattened = Either.flatten(eithers) as Either<number[], number[]>;
     assert(flattened.isLeft);
     assert(
       (
-        flatten([
+        Either.flatten([
           left<number>(5),
           right<number>(4),
           right<number>(3),
@@ -142,7 +141,7 @@ Deno.test("Flattening an array of Eithers", () => {
     );
     assert(
       (
-        flatten([
+        Either.flatten([
           right<number>(5),
           right<number>(4),
           left<number>(3),
@@ -150,19 +149,21 @@ Deno.test("Flattening an array of Eithers", () => {
       ).isLeft
     );
     assert(
-      flatten([left<number>(5), right<number>(4), right<number>(3)]).isLeft
+      Either.flatten([left<number>(5), right<number>(4), right<number>(3)])
+        .isLeft
     );
     assert(
-      flatten([right<number>(5), right<number>(4), left<number>(3)]).isLeft
+      Either.flatten([right<number>(5), right<number>(4), left<number>(3)])
+        .isLeft
     );
   });
 });
 
 Deno.test("empty", () => {
   Deno.test("returns an arbitrary left", () => {
-    assertFalse(empty().isRight);
-    assert(empty().isLeft);
-    assert(empty().isEmpty());
-    assert(empty().equals(left(1).empty()));
+    assertFalse(Either.empty().isRight);
+    assert(Either.empty().isLeft);
+    assert(Either.empty().isEmpty());
+    assert(Either.empty().equals(left(1).empty()));
   });
 });

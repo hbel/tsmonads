@@ -4,16 +4,17 @@ import {
   assertFalse,
   assertRejects,
 } from "jsr:@std/assert";
+
 import {
-  chain,
-  empty,
+  forEach,
+  maybe,
+  Maybe,
   match,
   nothing,
   or,
   orElse,
   orUndefined,
-} from "../src/maybemonad.ts";
-import { flatten, forEach, maybe, Maybe, Monad } from "./../monads.ts";
+} from "./../monads.ts";
 
 Deno.test("A maybe factory", () => {
   Deno.test("should return Just(5) for a value of 5", () => {
@@ -30,7 +31,7 @@ Deno.test("A maybe factory", () => {
 });
 
 Deno.test("nothing()", () => {
-  Deno.test("should set a maybe of arbDeno.testrary type to nothing", () => {
+  Deno.test("should set a maybe of arbitrary type to nothing", () => {
     const m: Maybe<number> = nothing();
     assert(m.nothing);
     assertEquals(m.orElse(0), 0);
@@ -83,11 +84,11 @@ Deno.test("On a collection of Maybes", () => {
     () => {
       let mbList: Array<Maybe<number>> = [1, 2, 3, 4].map((k) => maybe(k)); // Array of Maybe<number>
       let x = 0;
-      forEach(mbList as any, (y: number) => (x = x + y));
+      forEach(mbList, (y: number) => (x = x + y));
       assertEquals(x, 10);
       mbList = [null, 2, null, 4].map((xx) => maybe(xx)); // Array of Maybe<number>
       x = 0;
-      forEach(mbList as any, (y: number) => (x = x + y));
+      forEach(mbList, (y: number) => (x = x + y));
       assertEquals(x, 6);
     }
   );
@@ -96,7 +97,7 @@ Deno.test("On a collection of Maybes", () => {
 Deno.test("A maybe of a maybe", () => {
   Deno.test("can be chained into a maybe", () => {
     const m = maybe(maybe(5));
-    assertEquals(chain(m).orUndefined(), 5);
+    assertEquals(Maybe.chain(m).orUndefined(), 5);
   });
 });
 
@@ -199,13 +200,13 @@ Deno.test("A Maybe", () => {
 
       const mbList = [1, 2, 3, 4].map((xx) => maybe(xx)); // Array of Maybe<number>
       // Turn this into a Maybe[Array<number>]
-      const mbArray = flatten(mbList) as Maybe<number[]>;
+      const mbArray = Maybe.flatten(mbList);
       assertFalse(mbArray.nothing);
       const normalArray = mbArray.orElse([]);
       assertEquals(normalArray.length, 4);
       assertEquals(normalArray[0], 1);
       assertEquals(normalArray[2], 3);
-      const mbArray2 = flatten(mbList as any) as Maybe<number[]>;
+      const mbArray2 = Maybe.flatten(mbList);
       assertFalse(mbArray2.nothing);
     }
   );
@@ -213,11 +214,7 @@ Deno.test("A Maybe", () => {
     "Flattening an empty array of Maybes should result in an empty Maybe<Array>",
     () => {
       const arr: Array<Maybe<number>> = [];
-      const flattened = flatten<
-        number,
-        Maybe<number>,
-        Monad<number, Maybe<number>>
-      >(arr);
+      const flattened = Maybe.flatten(arr);
       assertFalse(flattened.hasValue);
     }
   );
@@ -230,6 +227,12 @@ Deno.test("A Maybe", () => {
       assertEquals(n.orUndefined(), undefined);
     }
   );
+});
+
+Deno.test("maybe chaining should remove one level of maybe", () => {
+  const vals = maybe(maybe(5));
+  const result = Maybe.chain(vals);
+  assertEquals(result.orUndefined(), 5);
 });
 
 Deno.test("maybe functions, ", () => {
@@ -256,10 +259,9 @@ Deno.test("maybe functions, ", () => {
 });
 
 Deno.test("empty", () => {
-  Deno.test("returns nothing", async () => {
-    assertFalse(empty().hasValue);
-    assert(empty().nothing);
-    assert(empty().isEmpty());
-    assert(empty().equals(maybe(1).empty()));
+  Deno.test("returns nothing", () => {
+    assertFalse(Maybe.empty().hasValue);
+    assert(Maybe.empty().nothing);
+    assert(Maybe.empty().isEmpty());
   });
 });

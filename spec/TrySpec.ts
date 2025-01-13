@@ -4,15 +4,16 @@ import {
   assertFalse,
   assertRejects,
 } from "jsr:@std/assert";
+
 import {
+  call,
+  flatten,
+  Try,
   Failure,
-  chain,
-  empty,
   wrapPromise,
   fromValue,
   fromError,
-} from "../src/trymonad.ts";
-import { call, flatten, type Try } from "./../monads.ts";
+} from "./../monads.ts";
 
 Deno.test("The call function", () => {
   Deno.test("should succeed with 5 for a function of f=2+3", () => {
@@ -79,7 +80,7 @@ Deno.test("wraps a promise", () => {
 Deno.test("A try of a try", () => {
   Deno.test("can be chained into a try", () => {
     const m = call(() => call(() => 5));
-    const chained = chain(m);
+    const chained = Try.chain(m);
     assert(chained.succeeded);
     assertEquals(chained.succeeded && chained.result, 5);
   });
@@ -273,9 +274,11 @@ Deno.test("Flatten on an array of try monads", () => {
 
 Deno.test("empty", () => {
   Deno.test("returns a Failure with an empty error object", async () => {
-    assertFalse(empty().succeeded);
-    assertEquals(empty().error.name, new Error().name);
-    assert(empty().isEmpty());
-    assert(empty().error.name === new Failure(new Error()).empty().error.name);
+    assertFalse(Try.empty().succeeded);
+    assertEquals(Try.empty().error.name, new Error().name);
+    assert(Try.empty().isEmpty());
+    assert(
+      Try.empty().error.name === new Failure(new Error()).empty().error.name
+    );
   });
 });

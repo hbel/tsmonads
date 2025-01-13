@@ -1,13 +1,8 @@
-import {
-  assertEquals,
-  assert,
-  assertFalse,
-  assertRejects,
-} from "jsr:@std/assert";
+import { assertEquals, assert } from "jsr:@std/assert";
 
 import {
-  type Try,
-  type Maybe,
+  Try,
+  Maybe,
   maybe,
   clean,
   flatten,
@@ -16,13 +11,9 @@ import {
   map,
   flatMap,
   is,
-  type Either,
+  Either,
   type Monad,
 } from "../monads.ts";
-import { empty as TryEmpty } from "../src/trymonad.ts";
-import { empty as MaybeEmpty } from "../src/maybemonad.ts";
-import { empty as EitherEmpty, Left } from "../src/eithermonad.ts";
-import type { Right } from "../src/eithermonad.ts";
 
 Deno.test("A maybe factory", () => {
   Deno.test("should return Just(5) for a value of 5", () => {
@@ -55,16 +46,16 @@ Deno.test("Flatten", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicDeno.test(-any
       const a: any[] = [];
       assert(
-        flatten<number, Try<number>, Try<number>>(a, TryEmpty).succeeded !=
+        flatten<number, Try<number>, Try<number>>(a, Try.empty).succeeded !=
           undefined
       );
       assert(
-        flatten<number, Maybe<number>, Maybe<number>>(a, MaybeEmpty).nothing !=
+        flatten<number, Maybe<number>, Maybe<number>>(a, Maybe.empty).nothing !=
           undefined
       );
       const either = flatten<number, Either<number, number>, any>(
         a,
-        EitherEmpty
+        Either.empty
       ) as unknown as Either<never, number>;
       assert(either.isLeft && !either.hasValue);
     }
@@ -75,14 +66,22 @@ Deno.test("Flatten", () => {
       call(() => 2),
       call(() => 3),
     ];
-    assert(flatten(tries, TryEmpty).succeeded != undefined);
+    assert(flatten(tries, Try.empty).succeeded != undefined);
     const maybes: Array<Maybe<number>> = [maybe(1), maybe(2), maybe(3)];
     assert(
-      flatten<number, Maybe<number>, Maybe<number>>(maybes, MaybeEmpty)
+      flatten<number, Maybe<number>, Maybe<number>>(maybes, Maybe.empty)
         .nothing != undefined
     );
-    const eithers: Array<Right<number>> = [right(1), right(2), right(3)];
-    const either = flatten(eithers, EitherEmpty);
+    const eithers: Array<Either<unknown, number>> = [
+      right(1),
+      right(2),
+      right(3),
+    ];
+    const either: any = flatten<
+      number,
+      Either<unknown, number>,
+      Either<unknown, number>
+    >(eithers, Either.empty);
     assert(either.isLeft && either.value != undefined);
   });
 });
@@ -101,10 +100,12 @@ Deno.test("Functional monads", () => {
     );
     assert(m2.hasValue);
     assertEquals(m2.hasValue && m2.value, 10);
-    const m3 = map<number, number, Right<number>, Right<number>>(
-      (x: number) => 2 * x,
-      right(5)
-    );
+    const m3: any = map<
+      number,
+      number,
+      Either<unknown, number>,
+      Either<unknown, number>
+    >((x: number) => 2 * x, right(5));
     assert(m3.hasValue);
     assertEquals(m3.hasValue && m3.value, 10);
   });
@@ -132,12 +133,12 @@ Deno.test("Functional monads", () => {
     assert(fm2.hasValue);
 
     assertEquals(fm2.hasValue && fm2.value, 10);
-    const fm3 = flatMap<
+    const fm3: any = flatMap<
       number,
       number,
-      Right<number>,
-      Right<number>,
-      Monad<number, Right<number>>
+      Either<unknown, number>,
+      Either<unknown, number>,
+      Monad<number, Either<unknown, number>>
     >((x: number) => right(2 * x), right(5));
     assert(fm3.hasValue);
     assertEquals(fm3.hasValue && fm3.value, 10);

@@ -1,5 +1,4 @@
-import { maybe, call, clean } from "../monads.ts";
-import * as Try from "../src/trymonad.ts";
+import { maybe, call, clean, Try } from "../monads.ts";
 
 const add10 = (a: number) => a + 10;
 
@@ -21,5 +20,5 @@ console.log(tries);
 const tried = Try.flatten(tries);
 console.log(tried);
 tried.forEach(console.log);
-const cleaned = clean<number, Try.Try<number>, Try.Try<number>>(tries);
+const cleaned = clean<number, Try<number>, Try<number>>(tries);
 console.log(cleaned);

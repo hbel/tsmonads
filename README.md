@@ -10,6 +10,8 @@ _tsmonads_ provides some basic, strictly typed monadic data types for use with T
 
 # Install
 
+deno: `deno add jsr:@itu/tsmonads`
+
 NPM: `npm install tsmonads`
 
 Yarn: `yarn add tsmonads`
@@ -17,6 +19,11 @@ Yarn: `yarn add tsmonads`
 # Usage
 
 Simply `import` the needed functions and classes from `"tsmonad`.
+
+# Breaking changes in 4.x
+
+-   Several utitily functions are now more strict and may accept fewer input types.
+-   Overridden utility functions for specific monads (like empty, chain, and flatten) where moved into the monad's respective namespace to make them more usable.
 
 # Breaking changes in 3.x
 

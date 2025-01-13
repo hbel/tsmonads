@@ -21,19 +21,26 @@ export function right<R>(value: R): Right<R> {
   return new Right<R>(value);
 }
 
+/** Either type (either a left or a right) */
 export type Either<L, R> = Left<L> | Right<R>;
 
-/**
- * Turn an array of monads of T into a monad of array of T.
- */
-export function flatten<L, R>(coll: Array<Either<L, R>>): Either<L[], R[]> {
-  return flattenHelper<R, Either<L, R>, Either<L, R>>(coll, empty) as Either<
-    L[],
-    R[]
-  >;
-}
+// deno-lint-ignore no-namespace
+export namespace Either {
+  /**
+   * Turn an array of monads of T into a monad of array of T.
+   */
+  export function flatten<L, R>(coll: Array<Either<L, R>>): Either<L[], R[]> {
+    return flattenHelper<R, Either<L, R>, Either<L, R>>(coll, empty) as Either<
+      L[],
+      R[]
+    >;
+  }
 
-export const empty = (): Left<Nothing> => left<Nothing>(nothing());
+  /**
+   * @returns an empty Either (left value)
+   */
+  export const empty = (): Left<Nothing> => left<Nothing>(nothing());
+}
 
 /**
  * Either monad
@@ -49,6 +56,9 @@ export abstract class EitherBase<L, R> implements Monad<R, Either<L, R>> {
    */
   abstract isRight: boolean;
 
+  /**
+   * Whether the monad has a value
+   */
   abstract hasValue: boolean;
 
   /**
@@ -96,8 +106,16 @@ export abstract class EitherBase<L, R> implements Monad<R, Either<L, R>> {
     return anyEquals(this, that);
   }
 
-  public empty = (): Left<Nothing> => empty();
+  /**
+   *
+   * @returns an empty Either (left value)
+   */
+  public empty = (): Left<Nothing> => Either.empty();
 
+  /**
+   *
+   * @returns whether the Either is empty (left)
+   */
   public isEmpty(): boolean {
     return this.isLeft;
   }
@@ -109,68 +127,90 @@ export abstract class EitherBase<L, R> implements Monad<R, Either<L, R>> {
 }
 
 export class Left<L> extends EitherBase<L, never> {
+  /** Constructor for Left (errornous) values */
   public constructor(public readonly value: L) {
     super();
   }
 
+  /** @inheritdoc */
   public readonly isLeft = true;
+  /** @inheritdoc */
   public readonly isRight = false;
+  /** @inheritdoc */
   public readonly hasValue = false;
 
+  /** @inheritdoc */
   public map<V>(_: (x: never) => V): Either<L, V> {
     return this;
   }
 
+  /** @inheritdoc */
   public flatMap(_: (x: never) => Left<L> | Right<never>): Either<L, never> {
     return this;
   }
 
+  /** @inheritdoc */
   public reduce<V>(_: (total: V, current: never) => V, start: V): V {
     return start;
   }
 
+  /** @inheritdoc */
   public forEach(_: (x: never) => void): void {
     /**/
   }
 
+  /** @inheritdoc */
   public toMaybe = (): Maybe<never> => new Nothing();
 
+  /** @inheritdoc */
   public toPromise = async (): Promise<never> =>
     await Promise.reject(this.value);
 
+  /** @inheritdoc */
   public match = <U>(left: (x: L) => U, _: (x: never) => U): U =>
     left(this.value);
 }
 
 export class Right<R> extends EitherBase<never, R> {
+  /** Constructor for correct values */
   constructor(public readonly value: R) {
     super();
   }
 
+  /** @inheritdoc */
   public readonly isLeft = false;
+  /** @inheritdoc */
   public readonly isRight = true;
+  /** @inheritdoc */
   public readonly hasValue = true;
 
+  /** @inheritdoc */
   public reduce<V>(f: (total: V, current: R) => V, start: V): V {
     return f(start, this.value);
   }
 
+  /** @inheritdoc */
   public map<V>(f: (x: R) => V): Either<never, V> {
     return right(f(this.value));
   }
 
+  /** @inheritdoc */
   public flatMap<V>(f: (x: R) => Either<never, V>): Either<never, V> {
     return f(this.value);
   }
 
+  /** @inheritdoc */
   public forEach(f: (x: R) => void): void {
     f(this.value);
   }
 
+  /** @inheritdoc */
   public toMaybe = (): Maybe<R> => new Just(this.value);
 
+  /** @inheritdoc */
   public toPromise = async (): Promise<R> => await Promise.resolve(this.value);
 
-  public match = <U>(left: (x: never) => U, right: (x: R) => U): U =>
+  /** @inheritdoc */
+  public match = <U>(_left: (x: never) => U, right: (x: R) => U): U =>
     right(this.value);
 }
