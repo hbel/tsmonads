@@ -1,9 +1,5 @@
 # tsmonads
 
-[![Build Status](https://travis-ci.org/hbel/tsmonads.svg?branch=master)](https://travis-ci.org/hbel/tsmonads)
-[![Dependencies](https://david-dm.org/hbel/tsmonads.svg)](https://david-dm.org/hbel/tsmonads.svg)
-[![codecov](https://codecov.io/gh/hbel/tsmonads/branch/master/graph/badge.svg)](https://codecov.io/gh/hbel/tsmonads)
-
 ### Monads in TypeScript
 
 _tsmonads_ provides some basic, strictly typed monadic data types for use with TypeScript, namely MayBe, Try and Either monads. It's API is heavily inspired by the according types in the Scala lanaguge API. It has **no** dependencies and can even be used (although without most of it's benefits) in JavaScript.
@@ -31,6 +27,8 @@ Simply `import` the needed functions and classes from `"tsmonad`.
 -   Global functions (map, flatMap) now return the correct type inferred from the incoming monad's type and the mapping function
 -   `unsafeLift()` was removed from all monads to ensure type safety
 -   Where default types are set for `Either::Left`, `Error` is now used instead of `string`
+
+# Application
 
 ## Maybe
 
