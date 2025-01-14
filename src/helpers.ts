@@ -67,19 +67,17 @@ type InferEither<T, U, M, V = Nothing> = T extends EitherBase<V, infer X>
   ? Right<U> | Left<V>
   : Monad<U, M>;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type InferTry<T, U, M> = T extends TryBase<infer X>
-  ? Success<U> | Failure
+type InferTry<T, U, M> = T extends TryBase<infer X> ? Success<U> | Failure
   : InferEither<T, U, M, Nothing>;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type InferMaybe<T, U, M> = T extends MaybeBase<infer X, M>
-  ? Just<U> | Nothing
+type InferMaybe<T, U, M> = T extends MaybeBase<infer X, M> ? Just<U> | Nothing
   : InferTry<T, U, M>;
 
 // The flatten functions allows you to turn an array of monads of T into
 // an monad of array of T.
 export function flatten<T, M, U extends Monad<T, M>>(
   l: U[] | undefined,
-  emptyFunc?: () => InferMaybe<U, T[], M>
+  emptyFunc?: () => InferMaybe<U, T[], M>,
 ): InferMaybe<U, T[], M> {
   if (l == null) {
     throw new Error("Array is empty or non-existent");
@@ -112,7 +110,7 @@ export function clean<T, M, U extends Monad<T, M>>(coll: U[]): T[] {
 // deno-lint-ignore no-explicit-any
 export function forEach<T, U extends Monad<T, any>>(
   coll: U[],
-  f: (x: T) => void
+  f: (x: T) => void,
 ): void {
   // deno-lint-ignore no-explicit-any
   coll.forEach((y: Monad<T, any>) => {
@@ -122,21 +120,21 @@ export function forEach<T, U extends Monad<T, any>>(
 
 // Remove one monadic level from the given Argument
 export function chain<T, M, U extends Monad<Monad<T, M>, M>>(
-  monad: U
+  monad: U,
 ): InferMaybe<T, T, M> {
   return monad.flatMap((x) => x) as InferMaybe<T, T, M>;
 }
 
 export function map<T, U, M, V extends Monad<T, M>>(
   f: (x: T) => U,
-  monad: V
+  monad: V,
 ): InferMaybe<V, U, M> {
   return monad.map(f) as InferMaybe<V, U, M>;
 }
 
 export function flatMap<T, U, M, V extends Monad<T, M>, W extends Monad<U, M>>(
   f: (x: T) => W,
-  monad: V
+  monad: V,
 ): InferMaybe<V, U, M> {
   return monad.flatMap(f) as unknown as InferMaybe<V, U, M>;
 }

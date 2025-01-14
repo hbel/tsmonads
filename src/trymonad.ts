@@ -1,4 +1,4 @@
-import { type Either, right, left } from "../monads.ts";
+import { type Either, left, right } from "../monads.ts";
 import {
   anyEquals,
   chain as chainHelper,
@@ -27,7 +27,7 @@ export function call<T>(f: () => T): Success<T> | Failure {
  * @returns Promise of a Try monad
  */
 export async function wrapPromise<T>(
-  p: () => Promise<T>
+  p: () => Promise<T>,
 ): Promise<Success<T> | Failure> {
   return await p()
     .then((s) => new Success(s))
@@ -68,7 +68,7 @@ export namespace Try {
  * @returns Try object
  */
 export function fromErrorOrValue<T, E extends Error>(
-  errorOrValue: E | T
+  errorOrValue: E | T,
 ): Try<T> {
   if (errorOrValue instanceof Error) {
     return fromError(errorOrValue);

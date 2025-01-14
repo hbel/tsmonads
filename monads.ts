@@ -1,31 +1,31 @@
 export {
   call,
-  wrapPromise,
-  Try,
-  Success,
   Failure,
   fromError,
-  fromValue,
   fromErrorOrValue,
+  fromValue,
+  Success,
+  Try,
+  wrapPromise,
 } from "./src/trymonad.ts";
 export {
-  maybe,
-  Maybe,
-  nothing,
-  Nothing,
   Just,
   match,
+  Maybe,
+  maybe,
+  Nothing,
+  nothing,
   or,
   orElse,
   orUndefined,
 } from "./src/maybemonad.ts";
-export { left, right, Either } from "./src/eithermonad.ts";
+export { Either, left, right } from "./src/eithermonad.ts";
 export {
+  clean,
+  flatMap,
   flatten,
   forEach,
-  clean,
-  map,
-  flatMap,
   is,
+  map,
   type Monad,
 } from "./src/helpers.ts";

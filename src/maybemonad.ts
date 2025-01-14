@@ -1,9 +1,8 @@
-import { type Left, type Right, left, right } from "./eithermonad.ts";
+import { type Left, left, type Right, right } from "./eithermonad.ts";
 import {
   anyEquals,
   chain as chainHelper,
   flatten as flattenHelper,
-  forEach as forEachHelper,
   type Monad,
 } from "./helpers.ts";
 
@@ -37,7 +36,7 @@ export namespace Maybe {
   // deno-lint-ignore no-explicit-any
   export function chain<T>(monad: Monad<Maybe<T>, any>): Maybe<T> {
     return chainHelper<T, Maybe<T>, Monad<Maybe<T>, unknown>>(
-      monad
+      monad,
     ) as Maybe<T>;
   }
 
@@ -48,7 +47,7 @@ export namespace Maybe {
   export function flatten<T>(coll: Array<Maybe<T>>): Maybe<T[]> {
     return flattenHelper<T, Maybe<T>, Maybe<T>>(
       coll,
-      empty
+      empty,
     ) as unknown as Maybe<T[]>;
   }
 
@@ -316,13 +315,13 @@ export class Nothing implements MaybeBase<never, Maybe<never>> {
 export const match = <T, U>(
   mb: Maybe<T>,
   justFunction: (x: T) => U,
-  nothingFunction: () => U
+  nothingFunction: () => U,
 ): U => mb.match(justFunction, nothingFunction);
 
 /** Functional call of or for a maybe */
 export const or = <T, U>(
   original: Maybe<T>,
-  fallback: Maybe<U>
+  fallback: Maybe<U>,
 ): Maybe<U> | Maybe<T> => original.or(fallback);
 
 /** Functional call of orElse for a maybe */

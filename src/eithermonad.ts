@@ -1,5 +1,5 @@
 import { anyEquals, flatten as flattenHelper, type Monad } from "./helpers.ts";
-import { Just, type Maybe, nothing, Nothing } from "./maybemonad.ts";
+import { Just, type Maybe, Nothing, nothing } from "./maybemonad.ts";
 
 /**
  * Create an Either with a left (erroneous) value
@@ -107,13 +107,11 @@ export abstract class EitherBase<L, R> implements Monad<R, Either<L, R>> {
   }
 
   /**
-   *
    * @returns an empty Either (left value)
    */
   public empty = (): Left<Nothing> => Either.empty();
 
   /**
-   *
    * @returns whether the Either is empty (left)
    */
   public isEmpty(): boolean {
