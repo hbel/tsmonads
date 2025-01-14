@@ -5,5 +5,14 @@
         "trymonad",
         "tsmonads"
     ],
-    "deno.enable": true
+    "deno.enable": true,
+    "deno.lint": true,
+    "[typescript]": {
+        "editor.defaultFormatter": "denoland.vscode-deno",
+        "editor.formatOnSave": true
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "denoland.vscode-deno",
+        "editor.formatOnSave": true
+    }
 }
