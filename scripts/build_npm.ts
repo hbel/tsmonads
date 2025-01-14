@@ -4,6 +4,8 @@ await emptyDir("./npm");
 
 await build({
   entryPoints: ["./monads.ts"],
+  typeCheck: "both",
+  declaration: "inline",
   outDir: "./npm",
   shims: {
     deno: true,
@@ -20,6 +22,7 @@ await build({
     bugs: {
       url: "https://github.com/hbel/tsmonads/issues",
     },
+    files: ["esm", "script", "src"],
   },
   postBuild() {
     Deno.copyFileSync("LICENSE", "npm/LICENSE");
